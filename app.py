@@ -4,8 +4,7 @@ import openai
 import datetime
 
 # Set your OpenAI API key
-openai.api_key = st.secrets["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"]  # Use secrets for safety
-
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 # Load existing data if available
 @st.cache_data
 def load_data():
