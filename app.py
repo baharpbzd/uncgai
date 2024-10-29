@@ -8,7 +8,7 @@ import os
 st.set_page_config(page_title="AI Prompt Engineering", layout="wide")
 
 # Using your image link from UNCG
-image_url = "https://uc.uncg.edu/wp-content/uploads/2023/05/UNCG_uao_VCBG-01.png"
+image_url = "https://uncgcdn.blob.core.windows.net/wallpaper/Wallpaper_Minerva-UNCG_desktop_3840x2160.jpg"
 
 # CSS to set the background image
 page_bg_img = f"""
