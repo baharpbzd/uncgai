@@ -7,10 +7,10 @@ import os
 # Set page configuration
 st.set_page_config(page_title="AI Prompt Engineering", layout="wide")
 
-# Replace this URL with your own image link
-image_url = "https://images.app.goo.gl/6qT819qLDy54fJjo9"  
+# Using your image link from UNCG
+image_url = "https://uc.uncg.edu/wp-content/uploads/2023/05/UNCG_uao_VCBG-01.png"
 
-# CSS to inject background image into the main container and body
+# CSS to set the background image
 page_bg_img = f"""
 <style>
 .stApp {{
@@ -22,7 +22,6 @@ page_bg_img = f"""
 }}
 </style>
 """
-
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
 def generate_response(api_key, prompt):
@@ -47,7 +46,6 @@ def save_interaction(student_name, prompt, ai_response):
         [[student_name, prompt, ai_response, timestamp]],
         columns=["Student", "Prompt", "AI_Response", "Timestamp"]
     )
-    # Save data, ensuring no duplicate headers
     file_exists = os.path.isfile("student_interactions.csv")
     data.to_csv("student_interactions.csv", mode="a", header=not file_exists, index=False)
 
