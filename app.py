@@ -4,17 +4,16 @@ import pandas as pd
 import datetime
 import os
 
-# Set page config for better layout and title
+# Set page configuration
 st.set_page_config(page_title="AI Prompt Engineering", layout="centered")
 
-# Replace the URL with your online image link
-background_image_url = "https://your-image-link.com/image.jpg"
+# Add a background image using CSS with your online image link
+image_url = "https://images.app.goo.gl/6qT819qLDy54fJjo9"  # Replace with your image link
 
-# Add CSS to set the background image
 page_bg_img = f"""
 <style>
 [data-testid="stAppViewContainer"] {{
-    background-image: url('{https://images.app.goo.gl/6qT819qLDy54fJjo9l}');
+    background-image: url('{image_url}');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -59,4 +58,15 @@ api_key = st.text_input("Enter your OpenAI API Key:", type="password")  # Masked
 prompt = st.text_area("Write your prompt:")
 
 if st.button("Generate AI Response"):
-    if student_name and
+    if student_name and api_key and prompt:
+        try:
+            ai_response = generate_response(api_key, prompt)
+            st.subheader("AI Response")
+            st.write(ai_response)
+
+            save_interaction(student_name, prompt, ai_response)
+            st.success("Your interaction has been saved!")
+        except Exception as e:
+            st.error(str(e))
+    else:
+        st.error("Please provide your name, API key, and a prompt.")
