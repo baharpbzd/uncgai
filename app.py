@@ -22,7 +22,6 @@ gclient = gspread.authorize(creds)
 sheet = gclient.open("Student Interactions").sheet1  # Change the name if needed
 
 def generate_response(prompt):
-    # Generate a response using OpenAI's Chat API
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",  # Or "gpt-4"
         messages=[{"role": "user", "content": prompt}],
@@ -32,11 +31,9 @@ def generate_response(prompt):
     return response.choices[0].message["content"].strip()
 
 def save_to_google_sheets(name, prompt, response, timestamp):
-    # Save the interaction to Google Sheets
     sheet.append_row([name, prompt, response, timestamp])
 
 def load_interactions():
-    # Load all interactions from Google Sheets into a DataFrame
     records = sheet.get_all_records()
     return pd.DataFrame(records)
 
@@ -51,15 +48,11 @@ prompt = st.text_area("Write your prompt:")
 if st.button("Generate AI Response"):
     if student_name and api_key and prompt:
         try:
-            # Temporarily set the provided API key
             openai.api_key = api_key
-            
-            # Generate AI response
             ai_response = generate_response(prompt)
             st.subheader("AI Response")
             st.write(ai_response)
 
-            # Save the interaction to Google Sheets
             timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             save_to_google_sheets(student_name, prompt, ai_response, timestamp)
 
@@ -69,16 +62,22 @@ if st.button("Generate AI Response"):
     else:
         st.error("Please provide your name, API key, and a prompt.")
 
-# Download section for instructors
+# Sidebar for instructors to download interactions
 st.sidebar.title("Instructor's Panel")
-if st.sidebar.button("Download Interactions as CSV"):
+if st.sidebar.button("Load Interactions"):
     interactions_df = load_interactions()
 
-    # Convert DataFrame to CSV and create a download button
-    csv = interactions_df.to_csv(index=False).encode('utf-8')
-    st.sidebar.download_button(
-        label="Download Interactions",
-        data=csv,
-        file_name="student_interactions.csv",
-        mime="text/csv"
-    )
+    if not interactions_df.empty:
+        st.sidebar.write("Preview of Interactions:")
+        st.sidebar.dataframe(interactions_df)
+
+        # Create a downloadable CSV
+        csv = interactions_df.to_csv(index=False).encode('utf-8')
+        st.sidebar.download_button(
+            label="Download Interactions as CSV",
+            data=csv,
+            file_name="student_interactions.csv",
+            mime="text/csv"
+        )
+    else:
+        st.sidebar.write("No interactions found.")
