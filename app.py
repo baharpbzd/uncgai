@@ -10,7 +10,7 @@ st.set_page_config(page_title="AI Prompt Engineering", layout="wide")
 # Using your image link from UNCG
 image_url = "https://uncgcdn.blob.core.windows.net/wallpaper/Wallpaper_Minerva-UNCG_desktop_3840x2160.jpg"
 
-# CSS to set the background image
+# CSS to set the background image and customize the font
 page_bg_img = f"""
 <style>
 .stApp {{
@@ -20,6 +20,14 @@ page_bg_img = f"""
     background-attachment: fixed;
     background-repeat: no-repeat;
 }}
+
+h1, h2, h3, h4, h5, h6, p, div {{
+    font-family: 'Arial', sans-serif;  /* Set font family */
+    font-weight: bold;  /* Make all text bold */
+    font-size: 18px;  /* Adjust the base font size */
+    color: black;  /* Optional: Ensure text color is readable */
+}}
+
 </style>
 """
 st.markdown(page_bg_img, unsafe_allow_html=True)
