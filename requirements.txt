@@ -2,3 +2,5 @@ streamlit
 openai==0.28 
 pandas
 python-dotenv
+gspread
+oauth2client
