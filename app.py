@@ -22,7 +22,7 @@ def save_interaction(student_name, prompt, ai_response):
 
 # Function to interact with OpenAI's GPT-3.5 model
 def generate_response(prompt):
-    response = openai.Completion.create(
+    response = openai.ChatCompletion.create(
         engine="text-davinci-003",  # Or "gpt-4" if available
         prompt=prompt,
         max_tokens=150,
