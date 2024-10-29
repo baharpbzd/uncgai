@@ -5,15 +5,16 @@ import datetime
 import os
 
 # Set page configuration
-st.set_page_config(page_title="AI Prompt Engineering", layout="centered")
+st.set_page_config(page_title="AI Prompt Engineering", layout="wide")
 
-# Add a background image using CSS with your online image link
-image_url = "https://images.app.goo.gl/6qT819qLDy54fJjo9"  # Replace with your image link
+# Replace this URL with your own image link
+image_url = "https://images.app.goo.gl/6qT819qLDy54fJjo9"  
 
+# CSS to inject background image into the main container and body
 page_bg_img = f"""
 <style>
-[data-testid="stAppViewContainer"] {{
-    background-image: url('{image_url}');
+.stApp {{
+    background-image: url("{image_url}");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -21,6 +22,7 @@ page_bg_img = f"""
 }}
 </style>
 """
+
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
 def generate_response(api_key, prompt):
