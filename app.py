@@ -10,6 +10,8 @@ from oauth2client.service_account import ServiceAccountCredentials
 # Load environment variables from .env file
 load_dotenv()
 
+os.environ['OPENAI_API_KEY'] = st.secrets['OPENAI_API_KEY']
+
 # Initialize OpenAI client
 client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
