@@ -1,8 +1,8 @@
-import requests
 import streamlit as st
 import pandas as pd
 import datetime
 import os
+import requests
 
 # Set page configuration
 st.set_page_config(page_title="AI Prompt Engineering", layout="wide")
@@ -10,7 +10,7 @@ st.set_page_config(page_title="AI Prompt Engineering", layout="wide")
 # Background image from UNCG
 image_url = "https://uncgcdn.blob.core.windows.net/wallpaper/Wallpaper_Minerva-UNCG_desktop_3840x2160.jpg"
 
-# CSS customization
+# CSS customization for background and fonts
 page_bg_img = f"""
 <style>
 .stApp {{
@@ -32,17 +32,21 @@ h1, h2, h3, h4, h5, h6, p, div {{
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
 def generate_response(api_key, prompt):
-    """Generates a response using Hugging Face API."""
-    api_url = "https://api-inference.huggingface.co/models/gpt2"  # Example model
+    """Generates a response using the Hugging Face Inference API."""
+    api_url = "https://api-inference.huggingface.co/models/gpt2"  # Use desired model
 
     headers = {"Authorization": f"Bearer {api_key}"}
     payload = {"inputs": prompt}
 
     try:
+        # Make API request
         response = requests.post(api_url, json=payload, headers=headers)
-        response.raise_for_status()
+        response.raise_for_status()  # Check for HTTP errors
+
+        # Extract generated text
         result = response.json()
-        return result.get("generated_text", "").strip()
+        generated_text = result.get("generated_text", "").strip()
+        return generated_text
     except Exception as e:
         raise RuntimeError(f"Failed to generate response: {str(e)}")
 
@@ -59,11 +63,12 @@ def save_interaction(student_name, prompt, ai_response):
 # Streamlit UI setup
 st.title("AI Prompt Engineering Assignment")
 
-# Input fields
+# Input fields for student name, API key, and prompt
 student_name = st.text_input("Enter your name:")
 api_key = st.text_input("Enter your Hugging Face API Key:", type="password")
 prompt = st.text_area("Write your prompt:")
 
+# Generate AI response on button click
 if st.button("Generate AI Response"):
     if student_name and api_key and prompt:
         try:
@@ -71,9 +76,10 @@ if st.button("Generate AI Response"):
             st.subheader("AI Response")
             st.write(ai_response)
 
+            # Save the interaction
             save_interaction(student_name, prompt, ai_response)
             st.success("Your interaction has been saved!")
         except Exception as e:
-            st.error(str(e))
+            st.error(f"Error: {str(e)}")
     else:
         st.error("Please provide your name, API key, and a prompt.")
