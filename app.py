@@ -34,6 +34,8 @@ st.markdown(page_bg_img, unsafe_allow_html=True)
 # Initialize chat history
 if 'chat_history' not in st.session_state:
     st.session_state.chat_history = []
+if 'user_input' not in st.session_state:
+    st.session_state.user_input = ""
 
 # Chatbot function using OpenAI API
 def chatbot_response(api_key, user_message):
@@ -59,7 +61,7 @@ with st.sidebar:
     st.title("Chat with AI")
 
     api_key = st.text_input("Enter OpenAI API Key:", type="password")
-    user_message = st.text_input("You:", key="user_input")
+    user_message = st.text_input("You:", value=st.session_state.user_input, key="user_input")
 
     if st.button("Send"):
         if api_key and user_message:
@@ -69,8 +71,9 @@ with st.sidebar:
             st.session_state.chat_history.append({"role": "user", "content": user_message})
             st.session_state.chat_history.append({"role": "assistant", "content": bot_reply})
 
-            # Clear the user input field after sending
-            st.experimental_rerun()
+            # Clear the input field after sending
+            st.session_state.user_input = ""
+            st.experimental_set_query_params()  # Refresh UI to reflect updates
 
     # Display chat history
     if st.session_state.chat_history:
