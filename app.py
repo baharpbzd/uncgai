@@ -1,8 +1,8 @@
+import requests
 import streamlit as st
 import pandas as pd
 import datetime
 import os
-import requests
 
 # Set page configuration
 st.set_page_config(page_title="AI Prompt Engineering", layout="wide")
@@ -32,26 +32,17 @@ h1, h2, h3, h4, h5, h6, p, div {{
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
 def generate_response(api_key, prompt):
-    """Generates a response using the Copilot API."""
-    # Assuming Copilot API follows similar request-response logic as OpenAI
-    headers = {"Authorization": f"Bearer {api_key}"}
-    api_url = "https://copilot.example.com/generate"  # Example endpoint
+    """Generates a response using Hugging Face API."""
+    api_url = "https://api-inference.huggingface.co/models/gpt2"  # Example model
 
-    payload = {
-        "model": "copilot-model",  # Adjust to the correct model name
-        "prompt": prompt,
-        "max_tokens": 150,
-        "temperature": 0.7
-    }
+    headers = {"Authorization": f"Bearer {api_key}"}
+    payload = {"inputs": prompt}
 
     try:
-        # Make API request
         response = requests.post(api_url, json=payload, headers=headers)
-        response.raise_for_status()  # Raise exception for HTTP errors
-
-        # Extract generated text
+        response.raise_for_status()
         result = response.json()
-        return result.get("choices", [{}])[0].get("text", "").strip()
+        return result.get("generated_text", "").strip()
     except Exception as e:
         raise RuntimeError(f"Failed to generate response: {str(e)}")
 
@@ -70,7 +61,7 @@ st.title("AI Prompt Engineering Assignment")
 
 # Input fields
 student_name = st.text_input("Enter your name:")
-api_key = st.text_input("Enter your Copilot API Key:", type="password")
+api_key = st.text_input("Enter your Hugging Face API Key:", type="password")
 prompt = st.text_area("Write your prompt:")
 
 if st.button("Generate AI Response"):
