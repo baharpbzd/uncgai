@@ -28,7 +28,7 @@ if st.session_state.theme == 'Light':
     input_bg_color = "#FFFFFF"
     selectbox_bg_color = "#F0F0F0"
     dropdown_bg_color = "#FFFFFF"  # Light mode dropdown background
-    dropdown_text_color = "#000000"  # Light mode text
+    dropdown_text_color = "#000000"  # Light mode text color
 else:
     page_bg_color = "#333333"
     font_color = "#FFFFFF"
@@ -37,7 +37,7 @@ else:
     input_bg_color = "#555555"
     selectbox_bg_color = "#444444"
     dropdown_bg_color = "#1E1E1E"  # Dark mode dropdown background
-    dropdown_text_color = "#FFFFFF"  # Dark mode text
+    dropdown_text_color = "#FFFFFF"  # Dark mode text color
 
 # CSS Styling for Themed App (Including Dropdowns)
 page_style = f"""
@@ -74,9 +74,11 @@ page_style = f"""
         background-color: {selectbox_bg_color} !important;
         color: {font_color} !important;
     }}
-    /* Dropdown options styling */
+    /* Dropdown list and options styling */
     ul[role="listbox"] {{
         background-color: {dropdown_bg_color} !important;
+    }}
+    ul[role="listbox"] li {{
         color: {dropdown_text_color} !important;
     }}
     </style>
