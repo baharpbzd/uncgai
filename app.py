@@ -21,18 +21,19 @@ if theme != st.session_state.theme:
 
 # Apply Theme-based Styling
 if st.session_state.theme == 'Light':
-    page_bg_color = "#FFFFFF"
-    sidebar_bg_color = "#F0F0F0"
-    general_text_color = "#000000"  # Black text for light mode
-    dropdown_bg_color = "#FFFFFF"
+    page_bg_color = "#FFFFFF"  # White background
+    font_color = "#000000"  # Black text
+    sidebar_bg_color = "#F0F0F0"  # Light gray sidebar background
+    button_bg_color = "#4CAF50"  # Green button (light theme)
+    input_bg_color = "#FFFFFF"  # White input fields
 else:
-    page_bg_color = "#333333"
-    sidebar_bg_color = "#1E1E1E"
-    general_text_color = "#FFFFFF"  # White text elsewhere in dark mode
-    dropdown_bg_color = "#1E1E1E"  # Dark background for dropdown
-    dropdown_text_color = "#000000"  # Force black text for dropdown and selectbox
+    page_bg_color = "#333333"  # Dark background
+    font_color = "#FFFFFF"  # White text
+    sidebar_bg_color = "#1E1E1E"  # Dark sidebar background
+    button_bg_color = "#1F7A8C"  # Teal button (dark theme)
+    input_bg_color = "#555555"  # Dark input fields
 
-# CSS Styling for Themed App (Including Selectbox)
+# CSS Styling to Apply Theme to App (Including Buttons and Inputs)
 page_style = f"""
     <style>
     .stApp {{
@@ -42,36 +43,25 @@ page_style = f"""
         font-family: 'Arial', sans-serif;
         font-weight: bold;
         font-size: 18px;
-        color: {general_text_color};
+        color: {font_color};
     }}
     section[data-testid="stSidebar"] {{
         background-color: {sidebar_bg_color};
     }}
     section[data-testid="stSidebar"] * {{
-        color: {general_text_color} !important;
+        color: {font_color} !important;
     }}
     input, textarea {{
-        background-color: {dropdown_bg_color};
-        color: {general_text_color};
+        background-color: {input_bg_color};
+        color: {font_color};
     }}
     button {{
-        background-color: {dropdown_bg_color};
-        color: {general_text_color};
+        background-color: {button_bg_color} !important;
+        color: white !important;
         border: none;
         border-radius: 5px;
         padding: 10px;
         font-weight: bold;
-    }}
-    /* Selectbox styling */
-    div[data-baseweb="select"] {{
-        background-color: {dropdown_bg_color} !important;
-    }}
-    /* Force black text for dropdown and selection pane */
-    div[data-baseweb="select"] *, ul[role="listbox"] li {{
-        color: {dropdown_text_color} !important;
-    }}
-    ul[role="listbox"] {{
-        background-color: {dropdown_bg_color} !important;
     }}
     </style>
 """
@@ -81,7 +71,7 @@ st.markdown(page_style, unsafe_allow_html=True)
 if 'interactions' not in st.session_state:
     st.session_state.interactions = []
 
-# Save interaction locally
+# Save interaction locally in session state
 def save_interaction(student_name, prompt, response):
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     st.session_state.interactions.append({
