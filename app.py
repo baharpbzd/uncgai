@@ -24,31 +24,44 @@ if st.session_state.theme == 'Light':
     page_bg_color = "#FFFFFF"  # White background
     font_color = "#000000"  # Black text
     sidebar_bg_color = "#F0F0F0"  # Light gray sidebar background
+    button_bg_color = "#4CAF50"  # Green button (light theme)
+    input_bg_color = "#FFFFFF"  # White input fields
 else:
     page_bg_color = "#333333"  # Dark background
     font_color = "#FFFFFF"  # White text
     sidebar_bg_color = "#1E1E1E"  # Dark sidebar background
+    button_bg_color = "#1F7A8C"  # Teal button (dark theme)
+    input_bg_color = "#555555"  # Dark input fields
 
-# CSS Styling to Apply Theme to the Entire App (Including Sidebar)
+# CSS Styling to Apply Theme to App (Including Buttons and Inputs)
 page_style = f"""
     <style>
-    /* Style for the whole app background */
     .stApp {{
         background-color: {page_bg_color};
     }}
-    /* Text color styling */
     h1, h2, h3, h4, h5, p, div {{
         font-family: 'Arial', sans-serif;
         font-weight: bold;
         font-size: 18px;
         color: {font_color};
     }}
-    /* Sidebar styling */
     section[data-testid="stSidebar"] {{
         background-color: {sidebar_bg_color};
     }}
     section[data-testid="stSidebar"] * {{
         color: {font_color} !important;
+    }}
+    input, textarea {{
+        background-color: {input_bg_color};
+        color: {font_color};
+    }}
+    button {{
+        background-color: {button_bg_color} !important;
+        color: white !important;
+        border: none;
+        border-radius: 5px;
+        padding: 10px;
+        font-weight: bold;
     }}
     </style>
 """
@@ -85,7 +98,9 @@ def prompt_engineering_page():
     student_name = st.text_input("Enter your name:")
     prompt = st.text_area("Write a prompt to generate an AI response:")
 
-    if st.button("Generate AI Response"):
+    generate_button = st.button("Generate AI Response")
+
+    if generate_button:
         if api_key and student_name and prompt:
             try:
                 response = generate_response(api_key, prompt)
