@@ -10,7 +10,7 @@ st.set_page_config(page_title="AI Prompt Engineering", layout="wide")
 # Using your image link from UNCG
 image_url = "https://uncgcdn.blob.core.windows.net/wallpaper/Wallpaper_Minerva-UNCG_desktop_3840x2160.jpg"
 
-# CSS to set the background image and customize the font
+# CSS for background and fonts
 page_bg_img = f"""
 <style>
 .stApp {{
@@ -22,9 +22,9 @@ page_bg_img = f"""
 }}
 
 h1, h2, h3, h4, h5, h6, p, div {{
-    font-family: 'Arial', sans-serif;  
-    font-weight: bold;  
-    font-size: 18px;  
+    font-family: 'Arial', sans-serif;
+    font-weight: bold;
+    font-size: 18px;
     color: black;
 }}
 </style>
@@ -32,25 +32,49 @@ h1, h2, h3, h4, h5, h6, p, div {{
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
 def generate_response(api_key, prompt):
-    """Generates a response using CoPilot's API."""
-    url = "https://api.copilot.com/v1/completions"  # Replace with the correct endpoint
+    """Generates a response from CoPilot API with error checks."""
+    # Step 1: Verify API endpoint
+    url = "https://api.copilot.com/v1/completions"  # Confirm this is correct
+
+    # Step 2: Set headers with the API key
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json"
     }
+
+    # Step 3: Prepare the payload (adjust based on API specs)
     payload = {
-        "model": "gpt-3.5-turbo",  # Adjust if necessary
+        "model": "gpt-3.5-turbo",  # Adjust if the model name differs
         "prompt": prompt,
         "max_tokens": 150,
         "temperature": 0.7
     }
 
+    # Step 4: Send request and catch errors
     try:
         response = requests.post(url, json=payload, headers=headers)
-        response.raise_for_status()  # Raise an error for bad responses
+
+        # Handle HTTP errors gracefully
+        if response.status_code == 401:
+            raise RuntimeError("Unauthorized: Please check your API key or permissions.")
+        elif response.status_code == 404:
+            raise RuntimeError("Endpoint not found: Verify the API endpoint.")
+        elif response.status_code == 429:
+            raise RuntimeError("Rate limit exceeded: Try again later.")
+        elif response.status_code >= 500:
+            raise RuntimeError("Server error: Please try again later.")
+
+        # If no errors, parse the response
+        response.raise_for_status()  # Raise exception for non-2xx responses
         return response.json()['choices'][0]['text'].strip()
-    except Exception as e:
-        raise RuntimeError(f"Failed to generate response: {str(e)}")
+
+    except requests.exceptions.HTTPError as http_err:
+        st.error(f"HTTP error occurred: {http_err}")
+        st.error(f"Response content: {response.text}")
+        raise
+    except Exception as err:
+        st.error(f"An unexpected error occurred: {err}")
+        raise
 
 def save_interaction(student_name, prompt, ai_response):
     """Saves the interaction to a CSV file."""
@@ -67,7 +91,7 @@ st.title("AI Prompt Engineering Assignment")
 
 # Input fields for student name, API key, and prompt
 student_name = st.text_input("Enter your name:")
-api_key = st.text_input("Enter your CoPilot API Key:", type="password")  # Masked input
+api_key = st.text_input("Enter your CoPilot API Key:", type="password")
 prompt = st.text_area("Write your prompt:")
 
 if st.button("Generate AI Response"):
@@ -80,6 +104,6 @@ if st.button("Generate AI Response"):
             save_interaction(student_name, prompt, ai_response)
             st.success("Your interaction has been saved!")
         except Exception as e:
-            st.error(str(e))
+            st.error(f"Error: {str(e)}")
     else:
         st.error("Please provide your name, API key, and a prompt.")
