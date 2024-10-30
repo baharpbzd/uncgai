@@ -1,4 +1,3 @@
-import openai
 import streamlit as st
 import pandas as pd
 import datetime
@@ -7,10 +6,10 @@ import os
 # Set page configuration
 st.set_page_config(page_title="AI Prompt Engineering", layout="wide")
 
-# Using your image link from UNCG
+# Background image from UNCG
 image_url = "https://uncgcdn.blob.core.windows.net/wallpaper/Wallpaper_Minerva-UNCG_desktop_3840x2160.jpg"
 
-# CSS to set the background image and customize the font
+# CSS customization
 page_bg_img = f"""
 <style>
 .stApp {{
@@ -22,28 +21,36 @@ page_bg_img = f"""
 }}
 
 h1, h2, h3, h4, h5, h6, p, div {{
-    font-family: 'Arial', sans-serif;  /* Set font family */
-    font-weight: bold;  /* Make all text bold */
-    font-size: 18px;  /* Adjust the base font size */
-    color: black;  /* Optional: Ensure text color is readable */
+    font-family: 'Arial', sans-serif;
+    font-weight: bold;
+    font-size: 18px;
+    color: black;
 }}
-
 </style>
 """
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
 def generate_response(api_key, prompt):
-    """Generates a response using OpenAI's API."""
-    openai.api_key = api_key
+    """Generates a response using the Copilot API."""
+    # Assuming Copilot API follows similar request-response logic as OpenAI
+    headers = {"Authorization": f"Bearer {api_key}"}
+    api_url = "https://copilot.example.com/generate"  # Example endpoint
+
+    payload = {
+        "model": "copilot-model",  # Adjust to the correct model name
+        "prompt": prompt,
+        "max_tokens": 150,
+        "temperature": 0.7
+    }
 
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",  # Or "gpt-4"
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=150,
-            temperature=0.7
-        )
-        return response.choices[0].message["content"].strip()
+        # Make API request
+        response = requests.post(api_url, json=payload, headers=headers)
+        response.raise_for_status()  # Raise exception for HTTP errors
+
+        # Extract generated text
+        result = response.json()
+        return result.get("choices", [{}])[0].get("text", "").strip()
     except Exception as e:
         raise RuntimeError(f"Failed to generate response: {str(e)}")
 
@@ -60,9 +67,9 @@ def save_interaction(student_name, prompt, ai_response):
 # Streamlit UI setup
 st.title("AI Prompt Engineering Assignment")
 
-# Input fields for student name, API key, and prompt
+# Input fields
 student_name = st.text_input("Enter your name:")
-api_key = st.text_input("Enter your OpenAI API Key:", type="password")  # Masked input
+api_key = st.text_input("Enter your Copilot API Key:", type="password")
 prompt = st.text_area("Write your prompt:")
 
 if st.button("Generate AI Response"):
