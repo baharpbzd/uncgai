@@ -22,24 +22,18 @@ if theme != st.session_state.theme:
 # Apply Theme-based Styling
 if st.session_state.theme == 'Light':
     page_bg_color = "#FFFFFF"
-    font_color = "#000000"
     sidebar_bg_color = "#F0F0F0"
     button_bg_color = "#4CAF50"
     input_bg_color = "#FFFFFF"
-    selectbox_bg_color = "#F0F0F0"
-    dropdown_bg_color = "#FFFFFF"  # Light mode dropdown background
-    dropdown_text_color = "#000000"  # Light mode text color
+    dropdown_bg_color = "#FFFFFF"
 else:
     page_bg_color = "#333333"
-    font_color = "#FFFFFF"
     sidebar_bg_color = "#1E1E1E"
     button_bg_color = "#1F7A8C"
     input_bg_color = "#555555"
-    selectbox_bg_color = "#444444"
-    dropdown_bg_color = "#1E1E1E"  # Dark mode dropdown background
-    dropdown_text_color = "#000000"  # Force black text in dark mode
+    dropdown_bg_color = "#1E1E1E"
 
-# CSS Styling for Themed App (Including Dropdowns)
+# CSS Styling for Themed App (Forcing Black Text Everywhere)
 page_style = f"""
     <style>
     .stApp {{
@@ -49,17 +43,17 @@ page_style = f"""
         font-family: 'Arial', sans-serif;
         font-weight: bold;
         font-size: 18px;
-        color: {font_color};
+        color: black;  /* Force black text */
     }}
     section[data-testid="stSidebar"] {{
         background-color: {sidebar_bg_color};
     }}
     section[data-testid="stSidebar"] * {{
-        color: {font_color} !important;
+        color: black !important;  /* Force black text in sidebar */
     }}
     input, textarea {{
         background-color: {input_bg_color};
-        color: {font_color};
+        color: black;  /* Force black text in input fields */
     }}
     button {{
         background-color: {button_bg_color} !important;
@@ -69,17 +63,16 @@ page_style = f"""
         padding: 10px;
         font-weight: bold;
     }}
-    /* Override selectbox styling */
+    /* Force black text and adjust dropdown styling */
     div[data-baseweb="select"] {{
-        background-color: {selectbox_bg_color} !important;
-        color: {font_color} !important;
+        background-color: {dropdown_bg_color} !important;
+        color: black !important;  /* Force black text in selection pane */
     }}
-    /* Dropdown list styling */
     ul[role="listbox"] {{
         background-color: {dropdown_bg_color} !important;
     }}
     ul[role="listbox"] li {{
-        color: {dropdown_text_color} !important;
+        color: black !important;  /* Force black text in dropdown options */
     }}
     </style>
 """
@@ -130,7 +123,7 @@ def prompt_engineering_page():
                         border-radius: 10px;
                         margin-top: 10px;
                         box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-                        color: #000000;">
+                        color: black;">
                         {response}
                     </div>
                     """,
