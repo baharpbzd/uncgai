@@ -33,7 +33,7 @@ else:
     button_bg_color = "#1F7A8C"
     input_bg_color = "#555555"
 
-# CSS Styling with Selectbox Dropdown Menu Customization
+# CSS Styling for Selectbox and Dropdown Menu Customization
 page_style = f"""
     <style>
     .stApp {{
@@ -67,19 +67,18 @@ page_style = f"""
     /* Customize the selectbox button */
     div[data-baseweb="select"] > div {{
         background-color: #228B22; /* Forest Green button */
-        color: white; /* White text */
+        color: white;
     }}
     div[data-baseweb="select"] > div:hover {{
         background-color: #1E7B1E; /* Darker green on hover */
     }}
 
-    /* Customize the expanded dropdown options */
-    div[role="listbox"] ul {{
-        background-color: #228B22; /* Forest Green dropdown background */
-        border-radius: 5px;
+    /* Customize the expanded dropdown menu */
+    div[role="listbox"] {{
+        background-color: #228B22; /* Forest Green dropdown */
     }}
     div[role="listbox"] ul li {{
-        color: white; /* White text for dropdown items */
+        color: white; /* White text */
     }}
     div[role="listbox"] ul li:hover {{
         background-color: #1E7B1E; /* Darker green on hover */
