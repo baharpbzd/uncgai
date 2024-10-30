@@ -22,19 +22,21 @@ if theme != st.session_state.theme:
 # Apply Theme-based Styling
 if st.session_state.theme == 'Light':
     page_bg_color = "#FFFFFF"
+    general_text_color = "#000000"  # Black text for light mode
     sidebar_bg_color = "#F0F0F0"
     button_bg_color = "#4CAF50"
     input_bg_color = "#FFFFFF"
     dropdown_bg_color = "#FFFFFF"
 else:
     page_bg_color = "#333333"
+    general_text_color = "#FFFFFF"  # White text for dark mode
     sidebar_bg_color = "#1E1E1E"
     button_bg_color = "#1F7A8C"
     input_bg_color = "#555555"
-    dropdown_bg_color = "#1E1E1E"
+    dropdown_bg_color = "#1E1E1E"  # Dark dropdown background
 
-# Force text color to black for selection pane and dropdown menu
-dropdown_text_color = "#000000"  # Black text color for both themes
+# Force dropdown text to be black regardless of theme
+dropdown_text_color = "#000000"  # Black text for dropdown
 
 # CSS Styling for Themed App
 page_style = f"""
@@ -46,17 +48,17 @@ page_style = f"""
         font-family: 'Arial', sans-serif;
         font-weight: bold;
         font-size: 18px;
-        color: {dropdown_text_color};
+        color: {general_text_color};
     }}
     section[data-testid="stSidebar"] {{
         background-color: {sidebar_bg_color};
     }}
     section[data-testid="stSidebar"] * {{
-        color: {dropdown_text_color} !important;
+        color: {general_text_color} !important;
     }}
     input, textarea {{
         background-color: {input_bg_color};
-        color: {dropdown_text_color};
+        color: {general_text_color};
     }}
     button {{
         background-color: {button_bg_color} !important;
@@ -66,12 +68,11 @@ page_style = f"""
         padding: 10px;
         font-weight: bold;
     }}
-    /* Selectbox styling */
+    /* Dropdown and selectbox styling */
     div[data-baseweb="select"] {{
         background-color: {dropdown_bg_color} !important;
         color: {dropdown_text_color} !important;
     }}
-    /* Dropdown list styling */
     ul[role="listbox"] {{
         background-color: {dropdown_bg_color} !important;
     }}
