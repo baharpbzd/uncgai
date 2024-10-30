@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import datetime
 import os
+import requests
 
 # Set page configuration
 st.set_page_config(page_title="AI Prompt Engineering", layout="wide")
