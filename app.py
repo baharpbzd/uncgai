@@ -1,8 +1,8 @@
+import openai
 import streamlit as st
 import pandas as pd
 import datetime
 import os
-import requests
 
 # Set page configuration
 st.set_page_config(page_title="AI Education App", layout="wide")
@@ -36,8 +36,8 @@ def prompt_engineering_page():
     st.title("Prompt Engineering")
     st.write("This page is dedicated to teaching students about Prompt Engineering.")
     
-    # Input fields for demonstration
-    api_key = st.text_input("Enter your CoPilot API Key:", type="password")
+    # Input fields for API key and prompt
+    api_key = st.text_input("Enter your OpenAI API Key:", type="password")
     prompt = st.text_area("Write a prompt to generate an AI response:")
     
     if st.button("Generate AI Response"):
@@ -56,6 +56,11 @@ def ethics_in_ai_page():
     st.title("Ethics in AI")
     st.write("This page covers the ethical considerations when building and using AI systems.")
     
+    st.subheader("Watch the Ethics in AI Video")
+    
+    # Embed YouTube video
+    st.video("https://youtu.be/muLPOvIEtaw?si=VkX-Vma888dwDkDA")
+
     st.subheader("Key Ethical Topics")
     st.write("""
     - **Bias in AI**: How algorithms can perpetuate societal biases.
@@ -64,23 +69,18 @@ def ethics_in_ai_page():
     - **Accountability**: Defining who is responsible for the decisions made by AI systems.
     """)
 
-# Generate AI response (moved to separate function)
+# Generate AI Response using OpenAI API
 def generate_response(api_key, prompt):
-    """Generates a response using CoPilot's API."""
-    url = "https://api.copilot.com/v1/connections"  # Adjust endpoint if necessary
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
-    }
-    payload = {
-        "prompt": prompt,
-        "max_tokens": 150,
-        "temperature": 0.7
-    }
+    """Generates a response using OpenAI's API."""
+    openai.api_key = api_key
 
-    response = requests.post(url, json=payload, headers=headers)
-    response.raise_for_status()
-    return response.json().get("choices", [{}])[0].get("text", "").strip()
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",  # You can switch to "gpt-4" if needed
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=150,
+        temperature=0.7
+    )
+    return response.choices[0].message["content"].strip()
 
 # Multi-Page Navigation with Sidebar
 st.sidebar.title("Navigation")
