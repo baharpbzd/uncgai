@@ -5,7 +5,7 @@ import os
 import requests
 
 # Set page configuration
-st.set_page_config(page_title="AI Prompt Engineering", layout="wide")
+st.set_page_config(page_title="CoPilot App Management", layout="wide")
 
 # Using your image link from UNCG
 image_url = "https://uncgcdn.blob.core.windows.net/wallpaper/Wallpaper_Minerva-UNCG_desktop_3840x2160.jpg"
@@ -31,79 +31,82 @@ h1, h2, h3, h4, h5, h6, p, div {{
 """
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
-def generate_response(api_key, prompt):
-    """Generates a response from CoPilot API with error checks."""
-    # Step 1: Verify API endpoint
-    url = "https://api.copilot.com/v1/completions"  # Confirm this is correct
-
-    # Step 2: Set headers with the API key
+def list_app_connections(api_key, install_id):
+    """Lists all app connections for the specified manual app install."""
+    url = f"https://api.copilot.com/v1/installs/{install_id}/connections"
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json"
     }
 
-    # Step 3: Prepare the payload (adjust based on API specs)
-    payload = {
-        "model": "gpt-3.5-turbo",  # Adjust if the model name differs
-        "prompt": prompt,
-        "max_tokens": 150,
-        "temperature": 0.7
-    }
-
-    # Step 4: Send request and catch errors
     try:
-        response = requests.post(url, json=payload, headers=headers)
-
-        # Handle HTTP errors gracefully
-        if response.status_code == 401:
-            raise RuntimeError("Unauthorized: Please check your API key or permissions.")
-        elif response.status_code == 404:
-            raise RuntimeError("Endpoint not found: Verify the API endpoint.")
-        elif response.status_code == 429:
-            raise RuntimeError("Rate limit exceeded: Try again later.")
-        elif response.status_code >= 500:
-            raise RuntimeError("Server error: Please try again later.")
-
-        # If no errors, parse the response
-        response.raise_for_status()  # Raise exception for non-2xx responses
-        return response.json()['choices'][0]['text'].strip()
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()  # Raise error for non-2xx responses
+        return response.json()  # Return the list of connections as JSON
 
     except requests.exceptions.HTTPError as http_err:
-        st.error(f"HTTP error occurred: {http_err}")
+        st.error(f"HTTP error: {http_err}")
         st.error(f"Response content: {response.text}")
         raise
     except Exception as err:
-        st.error(f"An unexpected error occurred: {err}")
+        st.error(f"Unexpected error: {err}")
         raise
 
-def save_interaction(student_name, prompt, ai_response):
-    """Saves the interaction to a CSV file."""
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    data = pd.DataFrame(
-        [[student_name, prompt, ai_response, timestamp]],
-        columns=["Student", "Prompt", "AI_Response", "Timestamp"]
-    )
-    file_exists = os.path.isfile("student_interactions.csv")
-    data.to_csv("student_interactions.csv", mode="a", header=not file_exists, index=False)
+def create_app_connection(api_key, install_id, company_id=None, client_ids=None):
+    """Creates an app connection for a manual app install."""
+    url = f"https://api.copilot.com/v1/installs/{install_id}/connections"
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "companyId": company_id,
+        "clientIds": client_ids  # Either companyId or clientIds must be non-null
+    }
+
+    try:
+        response = requests.post(url, json=payload, headers=headers)
+        response.raise_for_status()
+        return response.json()  # Return the created connection as JSON
+
+    except requests.exceptions.HTTPError as http_err:
+        st.error(f"HTTP error: {http_err}")
+        st.error(f"Response content: {response.text}")
+        raise
+    except Exception as err:
+        st.error(f"Unexpected error: {err}")
+        raise
 
 # Streamlit UI setup
-st.title("AI Prompt Engineering Assignment")
+st.title("CoPilot App Connections Manager")
 
-# Input fields for student name, API key, and prompt
-student_name = st.text_input("Enter your name:")
+# Input fields for API key, install ID, company ID, and client IDs
 api_key = st.text_input("Enter your CoPilot API Key:", type="password")
-prompt = st.text_area("Write your prompt:")
+install_id = st.text_input("Enter the Install ID:")
+company_id = st.text_input("Enter the Company ID (optional):")
+client_ids = st.text_area("Enter Client IDs (comma-separated, optional):")
 
-if st.button("Generate AI Response"):
-    if student_name and api_key and prompt:
+# Button to list app connections
+if st.button("List App Connections"):
+    if api_key and install_id:
         try:
-            ai_response = generate_response(api_key, prompt)
-            st.subheader("AI Response")
-            st.write(ai_response)
-
-            save_interaction(student_name, prompt, ai_response)
-            st.success("Your interaction has been saved!")
+            connections = list_app_connections(api_key, install_id)
+            st.subheader("App Connections")
+            st.write(connections)
         except Exception as e:
             st.error(f"Error: {str(e)}")
     else:
-        st.error("Please provide your name, API key, and a prompt.")
+        st.error("Please provide both the API key and Install ID.")
+
+# Button to create an app connection
+if st.button("Create App Connection"):
+    if api_key and install_id:
+        try:
+            client_ids_list = [cid.strip() for cid in client_ids.split(",")] if client_ids else None
+            connection = create_app_connection(api_key, install_id, company_id, client_ids_list)
+            st.success("App connection created successfully!")
+            st.write(connection)
+        except Exception as e:
+            st.error(f"Error: {str(e)}")
+    else:
+        st.error("Please provide the API key, Install ID, and at least one of Company ID or Client IDs.")
