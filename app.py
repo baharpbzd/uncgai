@@ -1,8 +1,8 @@
-import openai
 import streamlit as st
 import pandas as pd
 import datetime
 import os
+import requests
 
 # Set page configuration
 st.set_page_config(page_title="AI Prompt Engineering", layout="wide")
@@ -22,28 +22,33 @@ page_bg_img = f"""
 }}
 
 h1, h2, h3, h4, h5, h6, p, div {{
-    font-family: 'Arial', sans-serif;  /* Set font family */
-    font-weight: bold;  /* Make all text bold */
-    font-size: 18px;  /* Adjust the base font size */
-    color: black;  /* Optional: Ensure text color is readable */
+    font-family: 'Arial', sans-serif;  
+    font-weight: bold;  
+    font-size: 18px;  
+    color: black;
 }}
-
 </style>
 """
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
 def generate_response(api_key, prompt):
-    """Generates a response using OpenAI's API."""
-    openai.api_key = api_key
+    """Generates a response using CoPilot's API."""
+    url = "https://api.copilot.com/v1/completions"  # Replace with the correct endpoint
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "model": "gpt-3.5-turbo",  # Adjust if necessary
+        "prompt": prompt,
+        "max_tokens": 150,
+        "temperature": 0.7
+    }
 
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",  # Or "gpt-4"
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=150,
-            temperature=0.7
-        )
-        return response.choices[0].message["content"].strip()
+        response = requests.post(url, json=payload, headers=headers)
+        response.raise_for_status()  # Raise an error for bad responses
+        return response.json()['choices'][0]['text'].strip()
     except Exception as e:
         raise RuntimeError(f"Failed to generate response: {str(e)}")
 
@@ -62,7 +67,7 @@ st.title("AI Prompt Engineering Assignment")
 
 # Input fields for student name, API key, and prompt
 student_name = st.text_input("Enter your name:")
-api_key = st.text_input("Enter your OpenAI API Key:", type="password")  # Masked input
+api_key = st.text_input("Enter your CoPilot API Key:", type="password")  # Masked input
 prompt = st.text_area("Write your prompt:")
 
 if st.button("Generate AI Response"):
