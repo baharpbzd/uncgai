@@ -5,12 +5,12 @@ import os
 import requests
 
 # Set page configuration
-st.set_page_config(page_title="CoPilot App Management", layout="wide")
+st.set_page_config(page_title="CoPilot App Manager", layout="wide")
 
 # Using your image link from UNCG
 image_url = "https://uncgcdn.blob.core.windows.net/wallpaper/Wallpaper_Minerva-UNCG_desktop_3840x2160.jpg"
 
-# CSS for background and fonts
+# CSS to set background and font styles
 page_bg_img = f"""
 <style>
 .stApp {{
@@ -31,9 +31,9 @@ h1, h2, h3, h4, h5, h6, p, div {{
 """
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
-def list_app_connections(api_key, install_id):
-    """Lists all app connections for the specified manual app install."""
-    url = f"https://api.copilot.com/v1/installs/{install_id}/connections"
+def list_all_connections(api_key):
+    """Lists all connections available in the workspace."""
+    url = "https://api.copilot.com/v1/connections"  # Assuming this is a valid endpoint
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json"
@@ -41,8 +41,8 @@ def list_app_connections(api_key, install_id):
 
     try:
         response = requests.get(url, headers=headers)
-        response.raise_for_status()  # Raise error for non-2xx responses
-        return response.json()  # Return the list of connections as JSON
+        response.raise_for_status()
+        return response.json()  # Return connections as JSON
 
     except requests.exceptions.HTTPError as http_err:
         st.error(f"HTTP error: {http_err}")
@@ -52,16 +52,16 @@ def list_app_connections(api_key, install_id):
         st.error(f"Unexpected error: {err}")
         raise
 
-def create_app_connection(api_key, install_id, company_id=None, client_ids=None):
-    """Creates an app connection for a manual app install."""
-    url = f"https://api.copilot.com/v1/installs/{install_id}/connections"
+def create_connection(api_key, company_id=None, client_ids=None):
+    """Creates a new app connection."""
+    url = "https://api.copilot.com/v1/connections"
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json"
     }
     payload = {
         "companyId": company_id,
-        "clientIds": client_ids  # Either companyId or clientIds must be non-null
+        "clientIds": client_ids  # Either companyId or clientIds must be provided
     }
 
     try:
@@ -78,35 +78,34 @@ def create_app_connection(api_key, install_id, company_id=None, client_ids=None)
         raise
 
 # Streamlit UI setup
-st.title("CoPilot App Connections Manager")
+st.title("CoPilot Connections Manager")
 
-# Input fields for API key, install ID, company ID, and client IDs
+# Input fields for API key, Company ID, and Client IDs
 api_key = st.text_input("Enter your CoPilot API Key:", type="password")
-install_id = st.text_input("Enter the Install ID:")
 company_id = st.text_input("Enter the Company ID (optional):")
 client_ids = st.text_area("Enter Client IDs (comma-separated, optional):")
 
-# Button to list app connections
-if st.button("List App Connections"):
-    if api_key and install_id:
+# Button to list all connections
+if st.button("List All Connections"):
+    if api_key:
         try:
-            connections = list_app_connections(api_key, install_id)
-            st.subheader("App Connections")
+            connections = list_all_connections(api_key)
+            st.subheader("All Connections")
             st.write(connections)
         except Exception as e:
             st.error(f"Error: {str(e)}")
     else:
-        st.error("Please provide both the API key and Install ID.")
+        st.error("Please provide the API key.")
 
-# Button to create an app connection
-if st.button("Create App Connection"):
-    if api_key and install_id:
+# Button to create a new connection
+if st.button("Create New Connection"):
+    if api_key:
         try:
             client_ids_list = [cid.strip() for cid in client_ids.split(",")] if client_ids else None
-            connection = create_app_connection(api_key, install_id, company_id, client_ids_list)
-            st.success("App connection created successfully!")
+            connection = create_connection(api_key, company_id, client_ids_list)
+            st.success("Connection created successfully!")
             st.write(connection)
         except Exception as e:
             st.error(f"Error: {str(e)}")
     else:
-        st.error("Please provide the API key, Install ID, and at least one of Company ID or Client IDs.")
+        st.error("Please provide the API key.")
