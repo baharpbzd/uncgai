@@ -32,11 +32,11 @@ h1, h2, h3, h4, h5, h6, p, div {{
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
 def generate_response(api_key, prompt):
-    """Generates a response using the Hugging Face Inference API."""
-    api_url = "https://api-inference.huggingface.co/models/gpt2"  # Use desired model
+    """Generates a response using Hugging Face Inference API."""
+    api_url = "https://api-inference.huggingface.co/models/google/flan-t5-small"  # Updated model
 
     headers = {"Authorization": f"Bearer {api_key}"}
-    payload = {"inputs": prompt}
+    payload = {"inputs": prompt}  # Correct payload structure
 
     try:
         # Make API request
@@ -45,7 +45,7 @@ def generate_response(api_key, prompt):
 
         # Extract generated text
         result = response.json()
-        generated_text = result.get("generated_text", "").strip()
+        generated_text = result[0].get("generated_text", "").strip()
         return generated_text
     except Exception as e:
         raise RuntimeError(f"Failed to generate response: {str(e)}")
