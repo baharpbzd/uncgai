@@ -1,16 +1,16 @@
+import openai
 import streamlit as st
 import pandas as pd
 import datetime
 import os
-import requests
 
 # Set page configuration
-st.set_page_config(page_title="CoPilot App Manager", layout="wide")
+st.set_page_config(page_title="AI Prompt Engineering", layout="wide")
 
 # Using your image link from UNCG
 image_url = "https://uncgcdn.blob.core.windows.net/wallpaper/Wallpaper_Minerva-UNCG_desktop_3840x2160.jpg"
 
-# CSS to set background and font styles
+# CSS to set the background image and customize the font
 page_bg_img = f"""
 <style>
 .stApp {{
@@ -22,90 +22,59 @@ page_bg_img = f"""
 }}
 
 h1, h2, h3, h4, h5, h6, p, div {{
-    font-family: 'Arial', sans-serif;
-    font-weight: bold;
-    font-size: 18px;
-    color: black;
+    font-family: 'Arial', sans-serif;  /* Set font family */
+    font-weight: bold;  /* Make all text bold */
+    font-size: 18px;  /* Adjust the base font size */
+    color: black;  /* Optional: Ensure text color is readable */
 }}
+
 </style>
 """
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
-def list_all_connections(api_key):
-    """Lists all connections available in the workspace."""
-    url = "https://api.copilot.com/v1/connections"  # Assuming this is a valid endpoint
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
-    }
+def generate_response(api_key, prompt):
+    """Generates a response using OpenAI's API."""
+    openai.api_key = api_key
 
     try:
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-        return response.json()  # Return connections as JSON
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",  # Or "gpt-4"
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=150,
+            temperature=0.7
+        )
+        return response.choices[0].message["content"].strip()
+    except Exception as e:
+        raise RuntimeError(f"Failed to generate response: {str(e)}")
 
-    except requests.exceptions.HTTPError as http_err:
-        st.error(f"HTTP error: {http_err}")
-        st.error(f"Response content: {response.text}")
-        raise
-    except Exception as err:
-        st.error(f"Unexpected error: {err}")
-        raise
-
-def create_connection(api_key, company_id=None, client_ids=None):
-    """Creates a new app connection."""
-    url = "https://api.copilot.com/v1/connections"
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
-    }
-    payload = {
-        "companyId": company_id,
-        "clientIds": client_ids  # Either companyId or clientIds must be provided
-    }
-
-    try:
-        response = requests.post(url, json=payload, headers=headers)
-        response.raise_for_status()
-        return response.json()  # Return the created connection as JSON
-
-    except requests.exceptions.HTTPError as http_err:
-        st.error(f"HTTP error: {http_err}")
-        st.error(f"Response content: {response.text}")
-        raise
-    except Exception as err:
-        st.error(f"Unexpected error: {err}")
-        raise
+def save_interaction(student_name, prompt, ai_response):
+    """Saves the interaction to a CSV file."""
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    data = pd.DataFrame(
+        [[student_name, prompt, ai_response, timestamp]],
+        columns=["Student", "Prompt", "AI_Response", "Timestamp"]
+    )
+    file_exists = os.path.isfile("student_interactions.csv")
+    data.to_csv("student_interactions.csv", mode="a", header=not file_exists, index=False)
 
 # Streamlit UI setup
-st.title("CoPilot Connections Manager")
+st.title("AI Prompt Engineering Assignment")
 
-# Input fields for API key, Company ID, and Client IDs
-api_key = st.text_input("Enter your CoPilot API Key:", type="password")
-company_id = st.text_input("Enter the Company ID (optional):")
-client_ids = st.text_area("Enter Client IDs (comma-separated, optional):")
+# Input fields for student name, API key, and prompt
+student_name = st.text_input("Enter your name:")
+api_key = st.text_input("Enter your OpenAI API Key:", type="password")  # Masked input
+prompt = st.text_area("Write your prompt:")
 
-# Button to list all connections
-if st.button("List All Connections"):
-    if api_key:
+if st.button("Generate AI Response"):
+    if student_name and api_key and prompt:
         try:
-            connections = list_all_connections(api_key)
-            st.subheader("All Connections")
-            st.write(connections)
-        except Exception as e:
-            st.error(f"Error: {str(e)}")
-    else:
-        st.error("Please provide the API key.")
+            ai_response = generate_response(api_key, prompt)
+            st.subheader("AI Response")
+            st.write(ai_response)
 
-# Button to create a new connection
-if st.button("Create New Connection"):
-    if api_key:
-        try:
-            client_ids_list = [cid.strip() for cid in client_ids.split(",")] if client_ids else None
-            connection = create_connection(api_key, company_id, client_ids_list)
-            st.success("Connection created successfully!")
-            st.write(connection)
+            save_interaction(student_name, prompt, ai_response)
+            st.success("Your interaction has been saved!")
         except Exception as e:
-            st.error(f"Error: {str(e)}")
+            st.error(str(e))
     else:
-        st.error("Please provide the API key.")
+        st.error("Please provide your name, API key, and a prompt.")
