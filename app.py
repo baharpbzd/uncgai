@@ -76,4 +76,4 @@ if st.button("Generate AI Response"):
         except Exception as e:
             st.error(str(e))
     else:
-        st.error("Please provide your name, API key, and a prompt.")"
+        st.error("Please provide your name, API key, and a prompt.")
