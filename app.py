@@ -27,24 +27,27 @@ if st.session_state.theme == 'Light':
 else:
     page_bg_color = "#333333"  # Dark background
     font_color = "#FFFFFF"  # White text
-    sidebar_bg_color = "#444444"  # Dark gray sidebar background
+    sidebar_bg_color = "#1E1E1E"  # Dark sidebar background
 
-# CSS to style the page and sidebar dynamically
+# CSS Styling to Apply Theme to the Entire App (Including Sidebar)
 page_style = f"""
     <style>
+    /* Style for the whole app background */
     .stApp {{
         background-color: {page_bg_color};
     }}
+    /* Text color styling */
     h1, h2, h3, h4, h5, p, div {{
         font-family: 'Arial', sans-serif;
         font-weight: bold;
         font-size: 18px;
         color: {font_color};
     }}
-    .css-1d391kg {{
+    /* Sidebar styling */
+    section[data-testid="stSidebar"] {{
         background-color: {sidebar_bg_color};
     }}
-    .css-1d391kg * {{
+    section[data-testid="stSidebar"] * {{
         color: {font_color} !important;
     }}
     </style>
