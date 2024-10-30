@@ -64,24 +64,27 @@ page_style = f"""
         font-weight: bold;
     }}
 
-    /* Customize the selectbox button */
+    /* Customize the selectbox input field */
     div[data-baseweb="select"] > div {{
-        background-color: #228B22; /* Forest Green button */
-        color: white;
+        background-color: chartreuse;  /* Bright green */
+        color: black;
+        border: 2px solid black;
     }}
-    div[data-baseweb="select"] > div:hover {{
-        background-color: #1E7B1E; /* Darker green on hover */
+    
+    /* Customize the dropdown menu */
+    div[data-baseweb="select"] ul {{
+        background-color: red;  /* Bright red */
+        border-radius: 5px;
+        padding: 5px;
     }}
 
-    /* Customize the expanded dropdown menu */
-    div[role="listbox"] {{
-        background-color: #228B22; /* Forest Green dropdown */
+    /* Styling dropdown options */
+    div[data-baseweb="select"] ul li {{
+        color: white;
+        padding: 10px;
     }}
-    div[role="listbox"] ul li {{
-        color: white; /* White text */
-    }}
-    div[role="listbox"] ul li:hover {{
-        background-color: #1E7B1E; /* Darker green on hover */
+    div[data-baseweb="select"] ul li:hover {{
+        background-color: darkred;
     }}
     </style>
 """
