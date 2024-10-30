@@ -7,23 +7,38 @@ from io import BytesIO
 # Set page configuration
 st.set_page_config(page_title="AI Education App", layout="wide")
 
-# CSS for background and fonts
-image_url = "https://uncgcdn.blob.core.windows.net/wallpaper/Wallpaper_Minerva-UNCG_desktop_3840x2160.jpg"
+# Initialize session state for theme
+if 'theme' not in st.session_state:
+    st.session_state.theme = 'Light'
+
+# Theme selection in sidebar
+st.sidebar.title("Accessibility Mode")
+theme = st.sidebar.radio("Select Theme:", ["Light", "Dark"], key="theme_radio")
+
+# Update theme in session state
+if theme != st.session_state.theme:
+    st.session_state.theme = theme
+
+# Background and Font Styling Based on Theme
+if st.session_state.theme == 'Light':
+    page_bg_color = "#FFFFFF"  # White background for light mode
+    font_color = "#000000"  # Black font for light mode
+else:
+    page_bg_color = "#333333"  # Dark gray background for dark mode
+    font_color = "#FFFFFF"  # White font for dark mode
+
+# Apply CSS Styling
 page_bg_img = f"""
 <style>
 .stApp {{
-    background-image: url("{image_url}");
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    background-repeat: no-repeat;
+    background-color: {page_bg_color};
 }}
 
 h1, h2, h3, h4, h5, p, div {{
-    font-family: 'Arial', sans-serif';
+    font-family: 'Arial', sans-serif;
     font-weight: bold;
     font-size: 18px;
-    color: black;
+    color: {font_color};
 }}
 </style>
 """
@@ -67,8 +82,22 @@ def prompt_engineering_page():
         if api_key and student_name and prompt:
             try:
                 response = generate_response(api_key, prompt)
-                st.subheader("AI Response")
-                st.write(response)
+
+                # Display AI Response in a White Rectangle
+                st.markdown(
+                    f"""
+                    <div style="
+                        background-color: #FFFFFF;
+                        padding: 15px;
+                        border-radius: 10px;
+                        margin-top: 10px;
+                        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+                        color: #000000;">
+                        {response}
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
 
                 # Save the interaction locally
                 save_interaction(student_name, prompt, response)
@@ -110,7 +139,7 @@ def generate_response(api_key, prompt):
     openai.api_key = api_key
 
     response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",  # You can switch to "gpt-4" if needed
+        model="gpt-3.5-turbo",  # Use "gpt-4" if needed
         messages=[{"role": "user", "content": prompt}],
         max_tokens=150,
         temperature=0.7
