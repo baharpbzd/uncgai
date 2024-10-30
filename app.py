@@ -21,19 +21,19 @@ if theme != st.session_state.theme:
 
 # Apply Theme-based Styling
 if st.session_state.theme == 'Light':
-    page_bg_color = "#FFFFFF"  # White background
-    font_color = "#000000"  # Black text
-    sidebar_bg_color = "#F0F0F0"  # Light gray sidebar background
-    button_bg_color = "#4CAF50"  # Green button (light theme)
-    input_bg_color = "#FFFFFF"  # White input fields
+    page_bg_color = "#FFFFFF"
+    font_color = "#000000"
+    sidebar_bg_color = "#F0F0F0"
+    button_bg_color = "#4CAF50"
+    input_bg_color = "#FFFFFF"
 else:
-    page_bg_color = "#333333"  # Dark background
-    font_color = "#FFFFFF"  # White text
-    sidebar_bg_color = "#1E1E1E"  # Dark sidebar background
-    button_bg_color = "#1F7A8C"  # Teal button (dark theme)
-    input_bg_color = "#555555"  # Dark input fields
+    page_bg_color = "#333333"
+    font_color = "#FFFFFF"
+    sidebar_bg_color = "#1E1E1E"
+    button_bg_color = "#1F7A8C"
+    input_bg_color = "#555555"
 
-# CSS Styling for Custom Dropdown and Theme
+# CSS Styling with Selectbox Dropdown Menu Customization
 page_style = f"""
     <style>
     .stApp {{
@@ -64,25 +64,25 @@ page_style = f"""
         font-weight: bold;
     }}
 
-    /* Customize the dropdown button */
+    /* Customize the selectbox button */
     div[data-baseweb="select"] > div {{
-        background-color: #228B22;  /* Forest Green button */
-        color: white;  /* White text */
+        background-color: #228B22; /* Forest Green button */
+        color: white; /* White text */
     }}
     div[data-baseweb="select"] > div:hover {{
-        background-color: #1E7B1E;  /* Darker green on hover */
+        background-color: #1E7B1E; /* Darker green on hover */
     }}
 
-    /* Customize the expanded dropdown menu */
-    ul[data-baseweb="menu"] {{
-        background-color: #228B22;  /* Forest Green background for menu */
+    /* Customize the expanded dropdown options */
+    div[role="listbox"] ul {{
+        background-color: #228B22; /* Forest Green dropdown background */
         border-radius: 5px;
     }}
-    ul[data-baseweb="menu"] li {{
-        color: white;  /* White text for dropdown items */
+    div[role="listbox"] ul li {{
+        color: white; /* White text for dropdown items */
     }}
-    ul[data-baseweb="menu"] li:hover {{
-        background-color: #1E7B1E;  /* Darker green on hover */
+    div[role="listbox"] ul li:hover {{
+        background-color: #1E7B1E; /* Darker green on hover */
     }}
     </style>
 """
