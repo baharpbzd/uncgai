@@ -23,17 +23,19 @@ if theme != st.session_state.theme:
 if st.session_state.theme == 'Light':
     page_bg_color = "#FFFFFF"  # White background
     font_color = "#000000"  # Black text
-    sidebar_bg_color = "#F0F0F0"  # Light gray sidebar background
-    button_bg_color = "#4CAF50"  # Green button (light theme)
+    sidebar_bg_color = "#F0F0F0"  # Light gray sidebar
+    button_bg_color = "#4CAF50"  # Green button (light mode)
     input_bg_color = "#FFFFFF"  # White input fields
+    selectbox_bg_color = "#F0F0F0"  # Light selectbox
 else:
     page_bg_color = "#333333"  # Dark background
     font_color = "#FFFFFF"  # White text
-    sidebar_bg_color = "#1E1E1E"  # Dark sidebar background
-    button_bg_color = "#1F7A8C"  # Teal button (dark theme)
+    sidebar_bg_color = "#1E1E1E"  # Dark sidebar
+    button_bg_color = "#1F7A8C"  # Teal button (dark mode)
     input_bg_color = "#555555"  # Dark input fields
+    selectbox_bg_color = "#444444"  # Dark selectbox
 
-# CSS Styling to Apply Theme to App (Including Buttons and Inputs)
+# CSS Styling for Themed App (Including Sidebar and Selectbox)
 page_style = f"""
     <style>
     .stApp {{
@@ -63,6 +65,10 @@ page_style = f"""
         padding: 10px;
         font-weight: bold;
     }}
+    .css-1d391kg, .css-1vbd788 {{
+        background-color: {selectbox_bg_color};
+        color: {font_color};
+    }}
     </style>
 """
 st.markdown(page_style, unsafe_allow_html=True)
@@ -71,7 +77,7 @@ st.markdown(page_style, unsafe_allow_html=True)
 if 'interactions' not in st.session_state:
     st.session_state.interactions = []
 
-# Save interaction locally in session state
+# Save interaction locally
 def save_interaction(student_name, prompt, response):
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     st.session_state.interactions.append({
