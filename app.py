@@ -33,7 +33,10 @@ else:
     input_bg_color = "#555555"
     dropdown_bg_color = "#1E1E1E"
 
-# CSS Styling for Themed App (Forcing Black Text Everywhere)
+# Force text color to black for selection pane and dropdown menu
+dropdown_text_color = "#000000"  # Black text color for both themes
+
+# CSS Styling for Themed App
 page_style = f"""
     <style>
     .stApp {{
@@ -43,17 +46,17 @@ page_style = f"""
         font-family: 'Arial', sans-serif;
         font-weight: bold;
         font-size: 18px;
-        color: black;  /* Force black text */
+        color: {dropdown_text_color};
     }}
     section[data-testid="stSidebar"] {{
         background-color: {sidebar_bg_color};
     }}
     section[data-testid="stSidebar"] * {{
-        color: black !important;  /* Force black text in sidebar */
+        color: {dropdown_text_color} !important;
     }}
     input, textarea {{
         background-color: {input_bg_color};
-        color: black;  /* Force black text in input fields */
+        color: {dropdown_text_color};
     }}
     button {{
         background-color: {button_bg_color} !important;
@@ -63,16 +66,17 @@ page_style = f"""
         padding: 10px;
         font-weight: bold;
     }}
-    /* Force black text and adjust dropdown styling */
+    /* Selectbox styling */
     div[data-baseweb="select"] {{
         background-color: {dropdown_bg_color} !important;
-        color: black !important;  /* Force black text in selection pane */
+        color: {dropdown_text_color} !important;
     }}
+    /* Dropdown list styling */
     ul[role="listbox"] {{
         background-color: {dropdown_bg_color} !important;
     }}
     ul[role="listbox"] li {{
-        color: black !important;  /* Force black text in dropdown options */
+        color: {dropdown_text_color} !important;
     }}
     </style>
 """
@@ -123,7 +127,7 @@ def prompt_engineering_page():
                         border-radius: 10px;
                         margin-top: 10px;
                         box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-                        color: black;">
+                        color: #000000;">
                         {response}
                     </div>
                     """,
