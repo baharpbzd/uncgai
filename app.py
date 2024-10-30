@@ -21,21 +21,21 @@ if theme != st.session_state.theme:
 
 # Apply Theme-based Styling
 if st.session_state.theme == 'Light':
-    page_bg_color = "#FFFFFF"  # White background
-    font_color = "#000000"  # Black text
-    sidebar_bg_color = "#F0F0F0"  # Light gray sidebar
-    button_bg_color = "#4CAF50"  # Green button (light mode)
-    input_bg_color = "#FFFFFF"  # White input fields
-    selectbox_bg_color = "#F0F0F0"  # Light selectbox
+    page_bg_color = "#FFFFFF"
+    font_color = "#000000"
+    sidebar_bg_color = "#F0F0F0"
+    button_bg_color = "#4CAF50"
+    input_bg_color = "#FFFFFF"
+    selectbox_bg_color = "#F0F0F0"
 else:
-    page_bg_color = "#333333"  # Dark background
-    font_color = "#FFFFFF"  # White text
-    sidebar_bg_color = "#1E1E1E"  # Dark sidebar
-    button_bg_color = "#1F7A8C"  # Teal button (dark mode)
-    input_bg_color = "#555555"  # Dark input fields
-    selectbox_bg_color = "#444444"  # Dark selectbox
+    page_bg_color = "#333333"
+    font_color = "#FFFFFF"
+    sidebar_bg_color = "#1E1E1E"
+    button_bg_color = "#1F7A8C"
+    input_bg_color = "#555555"
+    selectbox_bg_color = "#444444"
 
-# CSS Styling for Themed App (Including Sidebar and Selectbox)
+# CSS Styling for Themed App
 page_style = f"""
     <style>
     .stApp {{
@@ -65,9 +65,13 @@ page_style = f"""
         padding: 10px;
         font-weight: bold;
     }}
-    .css-1d391kg, .css-1vbd788 {{
-        background-color: {selectbox_bg_color};
-        color: {font_color};
+    /* Override selectbox styling */
+    div[data-baseweb="select"] {{
+        background-color: {selectbox_bg_color} !important;
+        color: {font_color} !important;
+    }}
+    div[data-baseweb="select"] > div {{
+        background-color: {selectbox_bg_color} !important;
     }}
     </style>
 """
