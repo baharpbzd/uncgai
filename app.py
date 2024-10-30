@@ -22,23 +22,17 @@ if theme != st.session_state.theme:
 # Apply Theme-based Styling
 if st.session_state.theme == 'Light':
     page_bg_color = "#FFFFFF"
-    general_text_color = "#000000"  # Black text for light mode
     sidebar_bg_color = "#F0F0F0"
-    button_bg_color = "#4CAF50"
-    input_bg_color = "#FFFFFF"
+    general_text_color = "#000000"  # Black text for light mode
     dropdown_bg_color = "#FFFFFF"
 else:
     page_bg_color = "#333333"
-    general_text_color = "#FFFFFF"  # White text for dark mode
     sidebar_bg_color = "#1E1E1E"
-    button_bg_color = "#1F7A8C"
-    input_bg_color = "#555555"
-    dropdown_bg_color = "#1E1E1E"  # Dark dropdown background
+    general_text_color = "#FFFFFF"  # White text elsewhere in dark mode
+    dropdown_bg_color = "#1E1E1E"  # Dark background for dropdown
+    dropdown_text_color = "#000000"  # Force black text for dropdown and selectbox
 
-# Force dropdown text to be black regardless of theme
-dropdown_text_color = "#000000"  # Black text for dropdown
-
-# CSS Styling for Themed App
+# CSS Styling for Themed App (Including Selectbox)
 page_style = f"""
     <style>
     .stApp {{
@@ -57,27 +51,27 @@ page_style = f"""
         color: {general_text_color} !important;
     }}
     input, textarea {{
-        background-color: {input_bg_color};
+        background-color: {dropdown_bg_color};
         color: {general_text_color};
     }}
     button {{
-        background-color: {button_bg_color} !important;
-        color: white !important;
+        background-color: {dropdown_bg_color};
+        color: {general_text_color};
         border: none;
         border-radius: 5px;
         padding: 10px;
         font-weight: bold;
     }}
-    /* Dropdown and selectbox styling */
+    /* Selectbox styling */
     div[data-baseweb="select"] {{
         background-color: {dropdown_bg_color} !important;
+    }}
+    /* Force black text for dropdown and selection pane */
+    div[data-baseweb="select"] *, ul[role="listbox"] li {{
         color: {dropdown_text_color} !important;
     }}
     ul[role="listbox"] {{
         background-color: {dropdown_bg_color} !important;
-    }}
-    ul[role="listbox"] li {{
-        color: {dropdown_text_color} !important;
     }}
     </style>
 """
