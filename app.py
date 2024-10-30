@@ -33,7 +33,7 @@ else:
     button_bg_color = "#1F7A8C"  # Teal button (dark theme)
     input_bg_color = "#555555"  # Dark input fields
 
-# CSS Styling to Apply Theme to App (Including Buttons and Inputs)
+# CSS Styling to Apply Theme to App (Including Buttons, Inputs, and Dropdown Menu)
 page_style = f"""
     <style>
     .stApp {{
@@ -62,6 +62,17 @@ page_style = f"""
         border-radius: 5px;
         padding: 10px;
         font-weight: bold;
+    }}
+    /* Customize the dropdown menu in the sidebar */
+    div[data-baseweb="select"] > div {{
+        background-color: #228B22;  /* Forest Green background */
+        color: white;               /* White text for dropdown items */
+    }}
+    div[data-baseweb="select"] > div:hover {{
+        background-color: #1E7B1E;  /* Darker green on hover */
+    }}
+    div[data-baseweb="select"] span {{
+        color: white;               /* White text for selected option */
     }}
     </style>
 """
