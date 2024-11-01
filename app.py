@@ -185,4 +185,4 @@ page = st.sidebar.selectbox("Select a Page", ["Prompt Engineering", "Ethics in A
 if page == "Prompt Engineering":
     prompt_engineering_page()
 elif page == "Ethics in AI":
-    ethics_in_ai_page()"
+    ethics_in_ai_page()
