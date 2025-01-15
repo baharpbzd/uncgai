@@ -4,7 +4,7 @@ import pandas as pd
 import datetime
 from io import BytesIO
 import numpy as np
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 import random
 import requests
 
@@ -209,15 +209,19 @@ def self_supervised_learning_page():
     st.write("Here, you'll see how a machine can predict the missing parts of an image.")
 
     # Example Image
-    response = requests.get("https://placekitten.com/300/300")
-    example_image = Image.open(BytesIO(response.content)).convert("RGB")
-    st.image(example_image, caption="Original Image", use_column_width=True)
+    try:
+        response = requests.get("https://dummyimage.com/300x300/000/fff", timeout=10)
+        response.raise_for_status()  # Raise an HTTPError for bad responses
+        example_image = Image.open(BytesIO(response.content)).convert("RGB")
+        st.image(example_image, caption="Original Image", use_column_width=True)
 
-    # Masking Example
-    masked_image = mask_image(example_image)
-    st.image(masked_image, caption="Masked Image", use_column_width=True)
+        # Masking Example
+        masked_image = mask_image(example_image)
+        st.image(masked_image, caption="Masked Image", use_column_width=True)
 
-    st.write("The masked image hides parts of the original picture. In SSL, the model learns to predict what is missing.")
+        st.write("The masked image hides parts of the original picture. In SSL, the model learns to predict what is missing.")
+    except (requests.RequestException, UnidentifiedImageError) as e:
+        st.error("Failed to load the example image. Please check your internet connection or try again later.")
 
     # Step 3: Quiz
     st.subheader("Step 3: Test Your Understanding")
