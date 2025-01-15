@@ -90,7 +90,7 @@ page_style = f"""
         color: {dropdown_text_color};
         border-radius: 5px;
         padding: 10px;
-        border: 1px solid #555555;
+        border: 1px solid {input_focus_color};
     }}
     div[data-baseweb="select"] > div:hover {{
         background-color: {dropdown_hover_bg_color};
@@ -201,11 +201,7 @@ def generate_response(api_key, prompt):
     )
     return response.choices[0].message["content"].strip()
 
-# Display a list of pages
-st.sidebar.title("Available Pages")
-st.sidebar.write("- Prompt Engineering\n- Ethics in AI")
-
-# Prompt the user to navigate to a page
+# Sidebar Navigation
 page = st.sidebar.selectbox("Select a Page", ["Prompt Engineering", "Ethics in AI"])
 
 if page == "Prompt Engineering":
