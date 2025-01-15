@@ -25,13 +25,23 @@ if st.session_state.theme == 'Light':
     font_color = "#000000"
     sidebar_bg_color = "#F0F0F0"
     button_bg_color = "#4CAF50"
+    button_hover_color = "#3E8E41"
     input_bg_color = "#FFFFFF"
+    input_focus_color = "#4CAF50"
+    dropdown_bg_color = "#FFFFFF"
+    dropdown_text_color = "#000000"
+    dropdown_hover_bg_color = "#E0E0E0"
 else:
-    page_bg_color = "#333333"
+    page_bg_color = "#2E2E2E"
     font_color = "#FFFFFF"
     sidebar_bg_color = "#1E1E1E"
-    button_bg_color = "#1F7A8C"
-    input_bg_color = "#555555"
+    button_bg_color = "#007BFF"
+    button_hover_color = "#0056b3"
+    input_bg_color = "#3E3E3E"
+    input_focus_color = "#007BFF"
+    dropdown_bg_color = "#444444"
+    dropdown_text_color = "#FFFFFF"
+    dropdown_hover_bg_color = "#555555"
 
 # CSS Styling for Selectbox and Dropdown Menu Customization
 page_style = f"""
@@ -54,6 +64,13 @@ page_style = f"""
     input, textarea {{
         background-color: {input_bg_color};
         color: {font_color};
+        border: 1px solid #555555; /* Neutral border color */
+        border-radius: 5px;
+        padding: 5px;
+    }}
+    input:focus, textarea:focus {{
+        border: 1px solid {input_focus_color};
+        outline: none;
     }}
     button {{
         background-color: {button_bg_color} !important;
@@ -62,26 +79,31 @@ page_style = f"""
         border-radius: 5px;
         padding: 10px;
         font-weight: bold;
+        transition: background-color 0.3s;
     }}
-
+    button:hover {{
+        background-color: {button_hover_color} !important;
+    }}
     /* Customize the selectbox button */
     div[data-baseweb="select"] > div {{
-        background-color: #228B22; /* Forest Green button */
-        color: white;
+        background-color: {dropdown_bg_color};
+        color: {dropdown_text_color};
+        border-radius: 5px;
+        padding: 10px;
+        border: 1px solid #555555;
     }}
     div[data-baseweb="select"] > div:hover {{
-        background-color: #1E7B1E; /* Darker green on hover */
+        background-color: {dropdown_hover_bg_color};
     }}
-
     /* Customize the expanded dropdown menu */
     div[role="listbox"] {{
-        background-color: #228B22; /* Forest Green dropdown */
+        background-color: {dropdown_bg_color};
     }}
     div[role="listbox"] ul li {{
-        color: white; /* White text */
+        color: {dropdown_text_color};
     }}
     div[role="listbox"] ul li:hover {{
-        background-color: #1E7B1E; /* Darker green on hover */
+        background-color: {dropdown_hover_bg_color};
     }}
     </style>
 """
@@ -127,12 +149,12 @@ def prompt_engineering_page():
                 st.markdown(
                     f"""
                     <div style="
-                        background-color: #FFFFFF;
+                        background-color: {page_bg_color};
                         padding: 15px;
                         border-radius: 10px;
                         margin-top: 10px;
                         box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-                        color: #000000;">
+                        color: {font_color};">
                         {response}
                     </div>
                     """,
