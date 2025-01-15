@@ -201,7 +201,11 @@ def generate_response(api_key, prompt):
     )
     return response.choices[0].message["content"].strip()
 
-# Sidebar Navigation
+# Display a list of pages
+st.sidebar.title("Available Pages")
+st.sidebar.write("- Prompt Engineering\n- Ethics in AI")
+
+# Prompt the user to navigate to a page
 page = st.sidebar.selectbox("Select a Page", ["Prompt Engineering", "Ethics in AI"])
 
 if page == "Prompt Engineering":
