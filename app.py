@@ -84,7 +84,6 @@ page_style = f"""
     button:hover {{
         background-color: {button_hover_color} !important;
     }}
-    /* Customize the selectbox button */
     div[data-baseweb="select"] > div {{
         background-color: {dropdown_bg_color};
         color: {dropdown_text_color};
@@ -95,7 +94,6 @@ page_style = f"""
     div[data-baseweb="select"] > div:hover {{
         background-color: {dropdown_hover_bg_color};
     }}
-    /* Customize the expanded dropdown menu */
     div[role="listbox"] {{
         background-color: {dropdown_bg_color};
     }}
@@ -137,7 +135,7 @@ def prompt_engineering_page():
     st.write("This page is dedicated to teaching students about Prompt Engineering.")
 
     api_key = st.text_input("Enter your OpenAI API Key:", type="password")
-    student_name = st.text_input("Enter your name:")
+    student_name = st.text_input("Enter your name:", key="student_name")
     prompt = st.text_area("Write a prompt to generate an AI response:")
 
     generate_button = st.button("Generate AI Response")
@@ -196,13 +194,13 @@ def generate_response(api_key, prompt):
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}],
-        max_tokens=150,
+        max_tokens=300,  # Increased max_tokens
         temperature=0.7
     )
     return response.choices[0].message["content"].strip()
 
 # Sidebar Navigation
-page = st.sidebar.selectbox("Select a Page", ["Prompt Engineering", "Ethics in AI"])
+page = st.sidebar.selectbox("Select a Page", ["Prompt Engineering", "Ethics in AI"], key="page_selector")
 
 if page == "Prompt Engineering":
     prompt_engineering_page()
