@@ -6,6 +6,7 @@ from io import BytesIO
 import numpy as np
 from PIL import Image
 import random
+import requests
 
 # Set page configuration
 st.set_page_config(page_title="AI Education App", layout="wide")
@@ -208,7 +209,8 @@ def self_supervised_learning_page():
     st.write("Here, you'll see how a machine can predict the missing parts of an image.")
 
     # Example Image
-    example_image = Image.open("https://placekitten.com/300/300").convert("RGB")
+    response = requests.get("https://placekitten.com/300/300")
+    example_image = Image.open(BytesIO(response.content)).convert("RGB")
     st.image(example_image, caption="Original Image", use_column_width=True)
 
     # Masking Example
