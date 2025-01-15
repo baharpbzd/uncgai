@@ -3,6 +3,9 @@ import streamlit as st
 import pandas as pd
 import datetime
 from io import BytesIO
+import numpy as np
+from PIL import Image
+import random
 
 # Set page configuration
 st.set_page_config(page_title="AI Education App", layout="wide")
@@ -188,21 +191,73 @@ def ethics_in_ai_page():
     - **Accountability**: Defining who is responsible for the decisions made by AI systems.
     """)
 
-# Generate AI Response with OpenAI API
-def generate_response(api_key, prompt):
-    openai.api_key = api_key
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[{"role": "user", "content": prompt}],
-        max_tokens=300,  # Increased max_tokens
-        temperature=0.7
+# Self-Supervised Learning Page
+def self_supervised_learning_page():
+    st.title("Introduction to Self-Supervised Learning")
+    st.write("""
+    Self-supervised learning (SSL) is a way for machines to learn from data without labels. 
+    It helps models understand patterns and representations in the data by solving simple tasks like filling in the blanks or comparing images.
+    """)
+
+    # Step 1: Concept Explanation
+    st.subheader("Step 1: Understanding SSL with an Example")
+    st.write("Imagine you have a jigsaw puzzle, but some pieces are missing. You try to guess what the missing pieces look like based on the remaining parts. This is similar to how SSL works.")
+
+    # Step 2: Mask Prediction Task
+    st.subheader("Step 2: Mask Prediction Task")
+    st.write("Here, you'll see how a machine can predict the missing parts of an image.")
+
+    # Example Image
+    example_image = Image.open("https://placekitten.com/300/300").convert("RGB")
+    st.image(example_image, caption="Original Image", use_column_width=True)
+
+    # Masking Example
+    masked_image = mask_image(example_image)
+    st.image(masked_image, caption="Masked Image", use_column_width=True)
+
+    st.write("The masked image hides parts of the original picture. In SSL, the model learns to predict what is missing.")
+
+    # Step 3: Quiz
+    st.subheader("Step 3: Test Your Understanding")
+    st.write("Let's see what you learned!")
+    quiz_1 = st.radio(
+        "Why is self-supervised learning important?",
+        ["It requires fewer labels.", "It works only on labeled data.", "It improves hardware efficiency."]
     )
-    return response.choices[0].message["content"].strip()
+    if quiz_1 == "It requires fewer labels.":
+        st.success("Correct! SSL can work without labeled data.")
+    elif quiz_1:
+        st.error("Not quite. Try again!")
+
+    quiz_2 = st.radio(
+        "What is one common task in SSL?",
+        ["Classification", "Mask prediction", "Regression"]
+    )
+    if quiz_2 == "Mask prediction":
+        st.success("Correct! Predicting missing data is a key task in SSL.")
+    elif quiz_2:
+        st.error("Not quite. Try again!")
+
+# Helper Function: Mask Image
+def mask_image(image):
+    image = np.array(image)
+    mask = np.zeros_like(image)
+    mask_height = image.shape[0] // 3
+    mask_width = image.shape[1] // 3
+
+    start_x = random.randint(0, image.shape[1] - mask_width)
+    start_y = random.randint(0, image.shape[0] - mask_height)
+
+    mask[start_y:start_y + mask_height, start_x:start_x + mask_width, :] = 255
+    masked_image = np.where(mask == 255, 0, image)
+    return Image.fromarray(masked_image.astype("uint8"))
 
 # Sidebar Navigation
-page = st.sidebar.selectbox("Select a Page", ["Prompt Engineering", "Ethics in AI"], key="page_selector")
+page = st.sidebar.selectbox("Select a Page", ["Prompt Engineering", "Ethics in AI", "Self-Supervised Learning"], key="page_selector")
 
 if page == "Prompt Engineering":
     prompt_engineering_page()
 elif page == "Ethics in AI":
     ethics_in_ai_page()
+elif page == "Self-Supervised Learning":
+    self_supervised_learning_page()
