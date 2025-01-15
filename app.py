@@ -133,65 +133,6 @@ def generate_excel():
         df.to_excel(writer, index=False, sheet_name='Interactions')
     return output.getvalue()
 
-# Prompt Engineering Page
-def prompt_engineering_page():
-    st.title("Prompt Engineering")
-    st.write("This page is dedicated to teaching students about Prompt Engineering.")
-
-    api_key = st.text_input("Enter your OpenAI API Key:", type="password")
-    student_name = st.text_input("Enter your name:", key="student_name")
-    prompt = st.text_area("Write a prompt to generate an AI response:")
-
-    generate_button = st.button("Generate AI Response")
-
-    if generate_button:
-        if api_key and student_name and prompt:
-            try:
-                response = generate_response(api_key, prompt)
-                st.markdown(
-                    f"""
-                    <div style="
-                        background-color: {page_bg_color};
-                        padding: 15px;
-                        border-radius: 10px;
-                        margin-top: 10px;
-                        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-                        color: {font_color};">
-                        {response}
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-                save_interaction(student_name, prompt, response)
-                st.success("Your interaction has been saved locally!")
-            except Exception as e:
-                st.error(f"Error: {str(e)}")
-        else:
-            st.error("Please provide your name, API key, and a prompt.")
-
-    if st.session_state.interactions:
-        st.download_button(
-            label="Download Interactions as Excel",
-            data=generate_excel(),
-            file_name="interactions.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
-
-# Ethics in AI Page
-def ethics_in_ai_page():
-    st.title("Ethics in AI")
-    st.write("This page covers the ethical considerations when building and using AI systems.")
-    st.subheader("Watch the Ethics in AI Video")
-    st.video("https://youtu.be/muLPOvIEtaw?si=VkX-Vma888dwDkDA")
-
-    st.subheader("Key Ethical Topics")
-    st.write("""
-    - **Bias in AI**: How algorithms can perpetuate societal biases.
-    - **Transparency**: The need for clear communication on how AI makes decisions.
-    - **Privacy**: Protecting user data and ensuring AI systems respect privacy.
-    - **Accountability**: Defining who is responsible for the decisions made by AI systems.
-    """)
-
 # Self-Supervised Learning Page
 def self_supervised_learning_page():
     st.title("Introduction to Self-Supervised Learning")
@@ -200,23 +141,14 @@ def self_supervised_learning_page():
     It helps models understand patterns and representations in the data by solving simple tasks like filling in the blanks or comparing images.
     """)
 
-    # Step 1: Concept Explanation
-    st.subheader("Step 1: Understanding SSL with an Example")
-    st.write("Imagine you have a jigsaw puzzle, but some pieces are missing. You try to guess what the missing pieces look like based on the remaining parts. This is similar to how SSL works.")
-
-    # Step 2: Mask Prediction Task
-    st.subheader("Step 2: Mask Prediction Task")
-    st.write("Here, you'll see how a machine can predict the missing parts of an image.")
-
-    # Example Image
+    # Step 1: Masked Image First
+    st.subheader("Step 1: Mask the Image")
     try:
         response = requests.get("https://cataas.com/cat/orange,cute", timeout=10)
-        response.raise_for_status()  # Raise an HTTPError for bad responses
+        response.raise_for_status()
         example_image = Image.open(BytesIO(response.content)).convert("RGB")
-        st.image(example_image, caption="Original Image", width=300)
 
         # Masking Example
-        st.subheader("Interactive Exercise: Mask the Image")
         mask_size = st.slider("Select Mask Size (percentage of image):", 10, 50, 30)
 
         def mask_image(image, mask_percentage):
@@ -236,37 +168,46 @@ def self_supervised_learning_page():
         masked_image = mask_image(example_image, mask_size)
         st.image(masked_image, caption=f"Masked Image ({mask_size}% masked)", width=300)
 
-        st.write("In this exercise, you can adjust the mask size and observe how the image changes. SSL models are trained to predict what’s behind the mask.")
+        # Step 2: Reveal Original
+        st.subheader("Step 2: Reveal the Original Image")
+        st.image(example_image, caption="Original Image", width=300)
+
+        st.write("Try increasing or decreasing the mask size to see how much of the image remains recognizable.")
+
+        # Step 3: ChatGPT Prediction Challenge
+        st.subheader("Step 3: Predict the Masked Area")
+        api_key = st.text_input("Enter your OpenAI API Key:", type="password")
+        student_name = st.text_input("Enter your name:")
+
+        if st.button("Submit for Prediction"):
+            if api_key and student_name:
+                openai.api_key = api_key
+                masked_image_bytes = BytesIO()
+                masked_image.save(masked_image_bytes, format="PNG")
+                masked_image_bytes.seek(0)
+                try:
+                    # Use ChatGPT to provide predictions
+                    prompt = "Describe the missing part of this image based on the context of the visible areas."
+                    response = openai.ChatCompletion.create(
+                        model="gpt-3.5-turbo",
+                        messages=[{"role": "user", "content": prompt}],
+                        max_tokens=150
+                    )
+                    prediction = response.choices[0].message["content"]
+                    st.markdown(f"**GPT Prediction:** {prediction}")
+                    save_interaction(student_name, prompt, prediction)
+                except Exception as e:
+                    st.error(f"Prediction failed: {str(e)}")
+            else:
+                st.error("Please enter your API key and name to submit.")
+
+        st.write("Your task: Adjust the mask size and observe the prediction quality. Find the maximum mask size where GPT still provides an accurate prediction.")
+
     except (requests.RequestException, UnidentifiedImageError) as e:
         st.error("Failed to load the example image. Please check your internet connection or try again later.")
-
-    # Step 3: Quiz
-    st.subheader("Step 3: Test Your Understanding")
-    st.write("Let's see what you learned!")
-    quiz_1 = st.radio(
-        "Why is self-supervised learning important?",
-        ["It requires fewer labels.", "It works only on labeled data.", "It improves hardware efficiency."]
-    )
-    if quiz_1 == "It requires fewer labels.":
-        st.success("Correct! SSL can work without labeled data.")
-    elif quiz_1:
-        st.error("Not quite. Try again!")
-
-    quiz_2 = st.radio(
-        "What is one common task in SSL?",
-        ["Classification", "Mask prediction", "Regression"]
-    )
-    if quiz_2 == "Mask prediction":
-        st.success("Correct! Predicting missing data is a key task in SSL.")
-    elif quiz_2:
-        st.error("Not quite. Try again!")
 
 # Sidebar Navigation
 page = st.sidebar.selectbox("Select a Page", ["Prompt Engineering", "Ethics in AI", "Self-Supervised Learning"], key="page_selector")
 
-if page == "Prompt Engineering":
-    prompt_engineering_page()
-elif page == "Ethics in AI":
-    ethics_in_ai_page()
-elif page == "Self-Supervised Learning":
+if page == "Self-Supervised Learning":
     self_supervised_learning_page()
