@@ -213,13 +213,30 @@ def self_supervised_learning_page():
         response = requests.get("https://cataas.com/cat/orange,cute", timeout=10)
         response.raise_for_status()  # Raise an HTTPError for bad responses
         example_image = Image.open(BytesIO(response.content)).convert("RGB")
-        st.image(example_image, caption="Original Image",  use_container_width=True)
+        st.image(example_image, caption="Original Image", width=300)
 
         # Masking Example
-        masked_image = mask_image(example_image)
-        st.image(masked_image, caption="Masked Image",  use_container_width=True)
+        st.subheader("Interactive Exercise: Mask the Image")
+        mask_size = st.slider("Select Mask Size (percentage of image):", 10, 50, 30)
 
-        st.write("The masked image hides parts of the original picture. In SSL, the model learns to predict what is missing.")
+        def mask_image(image, mask_percentage):
+            image = np.array(image)
+            mask = np.zeros_like(image)
+            height, width, _ = image.shape
+            mask_height = int((mask_percentage / 100) * height)
+            mask_width = int((mask_percentage / 100) * width)
+
+            start_x = random.randint(0, width - mask_width)
+            start_y = random.randint(0, height - mask_height)
+
+            mask[start_y:start_y + mask_height, start_x:start_x + mask_width, :] = 255
+            masked_image = np.where(mask == 255, 0, image)
+            return Image.fromarray(masked_image.astype("uint8"))
+
+        masked_image = mask_image(example_image, mask_size)
+        st.image(masked_image, caption=f"Masked Image ({mask_size}% masked)", width=300)
+
+        st.write("In this exercise, you can adjust the mask size and observe how the image changes. SSL models are trained to predict what’s behind the mask.")
     except (requests.RequestException, UnidentifiedImageError) as e:
         st.error("Failed to load the example image. Please check your internet connection or try again later.")
 
@@ -243,20 +260,6 @@ def self_supervised_learning_page():
         st.success("Correct! Predicting missing data is a key task in SSL.")
     elif quiz_2:
         st.error("Not quite. Try again!")
-
-# Helper Function: Mask Image
-def mask_image(image):
-    image = np.array(image)
-    mask = np.zeros_like(image)
-    mask_height = image.shape[0] // 3
-    mask_width = image.shape[1] // 3
-
-    start_x = random.randint(0, image.shape[1] - mask_width)
-    start_y = random.randint(0, image.shape[0] - mask_height)
-
-    mask[start_y:start_y + mask_height, start_x:start_x + mask_width, :] = 255
-    masked_image = np.where(mask == 255, 0, image)
-    return Image.fromarray(masked_image.astype("uint8"))
 
 # Sidebar Navigation
 page = st.sidebar.selectbox("Select a Page", ["Prompt Engineering", "Ethics in AI", "Self-Supervised Learning"], key="page_selector")
