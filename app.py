@@ -210,14 +210,14 @@ def self_supervised_learning_page():
 
     # Example Image
     try:
-        response = requests.get("https://dummyimage.com/300x300/000/fff", timeout=10)
+        response = requests.get("https://cataas.com/cat/orange,cute", timeout=10)
         response.raise_for_status()  # Raise an HTTPError for bad responses
         example_image = Image.open(BytesIO(response.content)).convert("RGB")
-        st.image(example_image, caption="Original Image", use_column_width=True)
+        st.image(example_image, caption="Original Image",  use_container_width=True)
 
         # Masking Example
         masked_image = mask_image(example_image)
-        st.image(masked_image, caption="Masked Image", use_column_width=True)
+        st.image(masked_image, caption="Masked Image",  use_container_width=True)
 
         st.write("The masked image hides parts of the original picture. In SSL, the model learns to predict what is missing.")
     except (requests.RequestException, UnidentifiedImageError) as e:
