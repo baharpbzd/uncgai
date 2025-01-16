@@ -205,11 +205,12 @@ def ethics_in_ai_page():
     """)
 
 # Self-Supervised Learning Page
+# Self-Supervised Learning Page
 def self_supervised_learning_page():
     st.title("Introduction to Self-Supervised Learning")
     st.write("""
     Self-supervised learning (SSL) is a way for machines to learn from data without labels. 
-    In this exercise, you will upload an image, mask a portion of it, and observe how AI regenerates the missing part locally.
+    In this exercise, you will upload an image, mask a portion of it, and observe how AI regenerates the missing part using a lightweight OpenCV method.
     """)
 
     # Step 1: Upload an Image
@@ -217,52 +218,41 @@ def self_supervised_learning_page():
     uploaded_file = st.file_uploader("Upload an Image (JPG or PNG)", type=["jpg", "png", "jpeg"])
     if uploaded_file is not None:
         original_image = Image.open(uploaded_file).convert("RGB")
-        # Resize the image to 512x512 for efficient processing
-        original_image = original_image.resize((512, 512))
+        st.image(original_image, caption="Original Image", use_column_width=True)
+
         # Step 2: Adjust Mask Size
         st.subheader("Step 2: Adjust Mask Size")
-        mask_size = st.slider("Select Mask Size (percentage of image):", 5, 20, 10)
+        mask_size = st.slider("Select Mask Size (percentage of image):", 10, 50, 30)
 
         def mask_image(image, mask_percentage):
             image = np.array(image)
-            mask = np.zeros_like(image)
             height, width, _ = image.shape
+            mask = np.zeros((height, width), dtype=np.uint8)
             mask_height = int((mask_percentage / 100) * height)
             mask_width = int((mask_percentage / 100) * width)
 
             start_x = random.randint(0, width - mask_width)
             start_y = random.randint(0, height - mask_height)
 
-            mask[start_y:start_y + mask_height, start_x:start_x + mask_width, :] = 255
-            masked_image = np.where(mask == 255, 0, image)
-            return Image.fromarray(masked_image.astype("uint8"))
+            mask[start_y:start_y + mask_height, start_x:start_x + mask_width] = 255
 
-        masked_image = mask_image(original_image, mask_size)
+            masked_image = image.copy()
+            masked_image[start_y:start_y + mask_height, start_x:start_x + mask_width, :] = 0
+            return Image.fromarray(masked_image), mask
+
+        masked_image, mask = mask_image(original_image, mask_size)
         st.image(masked_image, caption=f"Masked Image ({mask_size}% masked)", use_column_width=True)
 
-        # Step 3: Regenerate the Masked Area Locally
-        st.subheader("Step 3: Regenerate the Masked Area Locally")
+        # Step 3: Regenerate the Masked Area Using OpenCV
+        st.subheader("Step 3: Regenerate the Masked Area")
         if st.button("Regenerate Masked Area"):
             try:
-                from diffusers import StableDiffusionInpaintPipeline
-                import torch
-
-                # Load Stable Diffusion Inpainting Model
-                pipe = StableDiffusionInpaintPipeline.from_pretrained(
-                    "runwayml/stable-diffusion-inpainting",
-                    torch_dtype=torch.float32
-                ).to("cuda" if torch.cuda.is_available() else "cpu")
-
-                # Resize images to 512x512 for Stable Diffusion
-                original_image = original_image.resize((512, 512))
-                masked_image = masked_image.resize((512, 512))
-
-                # Perform inpainting
-                result = pipe(prompt="A high-quality photo of the missing part of an object.", 
-                              image=original_image, mask_image=masked_image).images[0]
-
-                # Display result
-                st.image(result, caption="Regenerated Image", use_column_width=True)
+                import cv2
+                original_np = np.array(original_image)
+                inpainted_image = cv2.inpaint(
+                    original_np, mask, inpaintRadius=3, flags=cv2.INPAINT_TELEA
+                )
+                st.image(Image.fromarray(inpainted_image), caption="Regenerated Image", use_column_width=True)
             except Exception as e:
                 st.error(f"Error during inpainting: {str(e)}")
 
@@ -271,10 +261,10 @@ def self_supervised_learning_page():
         st.write("""
         1. How does the regenerated image compare to the original?
         2. How does the mask size affect the quality of regeneration?
-        3. What are the potential applications of this technology in real-world scenarios?
+        3. What are the limitations of this lightweight inpainting method?
         """)
 
-# Sidebar Navigation
+# Integrate Self-Supervised Learning Page into Navigation
 page = st.sidebar.selectbox("Select a Page", ["Prompt Engineering", "Ethics in AI", "Self-Supervised Learning"], key="page_selector")
 
 if page == "Prompt Engineering":
