@@ -133,6 +133,17 @@ def generate_excel():
         df.to_excel(writer, index=False, sheet_name='Interactions')
     return output.getvalue()
 
+# Generate AI Response with OpenAI API
+def generate_response(api_key, prompt):
+    openai.api_key = api_key
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=150,
+        temperature=0.7
+    )
+    return response.choices[0].message["content"].strip()
+
 # Self-Supervised Learning Page
 def self_supervised_learning_page():
     st.title("Introduction to Self-Supervised Learning")
@@ -188,12 +199,7 @@ def self_supervised_learning_page():
                 try:
                     # Use ChatGPT to provide predictions
                     prompt = "Describe the missing part of this image based on the context of the visible areas."
-                    response = openai.ChatCompletion.create(
-                        model="gpt-3.5-turbo",
-                        messages=[{"role": "user", "content": prompt}],
-                        max_tokens=150
-                    )
-                    prediction = response.choices[0].message["content"]
+                    prediction = generate_response(api_key, prompt)
                     st.markdown(f"**GPT Prediction:** {prediction}")
                     save_interaction(student_name, prompt, prediction)
                 except Exception as e:
