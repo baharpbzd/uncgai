@@ -205,6 +205,7 @@ def ethics_in_ai_page():
     """)
 
 # Self-Supervised Learning Page
+# Self-Supervised Learning Page
 def self_supervised_learning_page():
     st.title("Introduction to Self-Supervised Learning")
     st.write("""
@@ -212,9 +213,71 @@ def self_supervised_learning_page():
     It helps models understand patterns and representations in the data by solving simple tasks like filling in the blanks or comparing images.
     """)
 
-    # Step 1: Masked Image First
-    st.subheader("Step 1: Mask the Image")
-    try:
+    # Step 1: Upload an Image
+    st.subheader("Step 1: Upload an Image")
+    uploaded_file = st.file_uploader("Upload an Image (JPG or PNG)", type=["jpg", "png", "jpeg"])
+    if uploaded_file is not None:
+        original_image = Image.open(uploaded_file).convert("RGB")
+        st.image(original_image, caption="Original Image", use_column_width=True)
+
+        # Step 2: Adjust Mask Size
+        st.subheader("Step 2: Adjust Mask Size")
+        mask_size = st.slider("Select Mask Size (percentage of image):", 10, 50, 30)
+
+        def mask_image(image, mask_percentage):
+            image = np.array(image)
+            mask = np.zeros_like(image)
+            height, width, _ = image.shape
+            mask_height = int((mask_percentage / 100) * height)
+            mask_width = int((mask_percentage / 100) * width)
+
+            start_x = random.randint(0, width - mask_width)
+            start_y = random.randint(0, height - mask_height)
+
+            mask[start_y:start_y + mask_height, start_x:start_x + mask_width, :] = 255
+            masked_image = np.where(mask == 255, 0, image)
+            return Image.fromarray(masked_image.astype("uint8"))
+
+        masked_image = mask_image(original_image, mask_size)
+        st.image(masked_image, caption=f"Masked Image ({mask_size}% masked)", use_column_width=True)
+
+        # Step 3: Predict Masked Area
+        st.subheader("Step 3: Predict the Masked Area")
+        st.write("""
+        Use GPT to predict the content of the masked area based on the visible parts of the image.
+        """)
+
+        api_key = st.text_input("Enter your OpenAI API Key:", type="password")
+        student_name = st.text_input("Enter your name:")
+
+        if st.button("Submit for Prediction"):
+            if api_key:
+                try:
+                    # Generate a description of the visible area
+                    visible_description = f"The visible part of the image shows a {100 - mask_size}% area, likely of an object like an animal."
+
+                    # Generate GPT prompt
+                    prompt = f"Based on the following description of an image: '{visible_description}', predict what might be in the masked area."
+
+                    # Use GPT for prediction
+                    openai.api_key = api_key
+                    prediction = generate_response(api_key, prompt)
+
+                    # Display GPT Prediction
+                    st.markdown(f"**GPT Prediction:** {prediction}")
+                    save_interaction(student_name, prompt, prediction)
+                except Exception as e:
+                    st.error(f"Prediction failed: {str(e)}")
+            else:
+                st.error("Please enter your OpenAI API key to proceed.")
+
+        # Reflection Questions
+        st.write("### Reflection Questions:")
+        st.write("""
+        1. How does increasing the mask size impact GPT's predictions?
+        2. Why do you think GPT struggles with larger mask sizes?
+        3. How does this relate to self-supervised learning in AI systems?
+        """)
         response = requests.get("https://cataas.com/cat/orange,cute", timeout=10)
         response.raise_for_status()
         example_image = Image.open(BytesIO(response.content)).convert("RGB")
@@ -271,6 +334,16 @@ def self_supervised_learning_page():
 
     except (requests.RequestException, UnidentifiedImageError) as e:
         st.error("Failed to load the example image. Please check your internet connection or try again later.")
+
+# Sidebar Navigation
+page = st.sidebar.selectbox("Select a Page", ["Prompt Engineering", "Ethics in AI", "Self-Supervised Learning"], key="page_selector")
+
+if page == "Prompt Engineering":
+    prompt_engineering_page()
+elif page == "Ethics in AI":
+    ethics_in_ai_page()
+elif page == "Self-Supervised Learning":
+    self_supervised_learning_page()
 
 # Sidebar Navigation
 page = st.sidebar.selectbox("Select a Page", ["Prompt Engineering", "Ethics in AI", "Self-Supervised Learning"], key="page_selector")
