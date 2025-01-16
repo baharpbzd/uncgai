@@ -205,6 +205,26 @@ def ethics_in_ai_page():
     """)
 
 # Self-Supervised Learning Page
+# Function to save responses
+def save_responses(student_name, q1, q2, q3):
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    st.session_state.responses.append({
+        "Timestamp": timestamp,
+        "Student Name": student_name,
+        "Q1": q1,
+        "Q2": q2,
+        "Q3": q3
+    })
+
+# Generate Excel from responses
+def generate_excel_responses():
+    df = pd.DataFrame(st.session_state.responses)
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df.to_excel(writer, index=False, sheet_name='Responses')
+    return output.getvalue()
+
+# Self-Supervised Learning Page
 def self_supervised_learning_page():
     st.title("Introduction to Self-Supervised Learning")
     st.write("""
@@ -255,13 +275,26 @@ def self_supervised_learning_page():
             except Exception as e:
                 st.error(f"Error during inpainting: {str(e)}")
 
-        # Reflection Questions
-        st.write("### Reflection Questions:")
-        st.write("""
-        1. How does the regenerated image compare to the original?
-        2. How does the mask size affect the quality of regeneration?
-        3. What are the limitations of this lightweight inpainting method?
-        """)
+    # Reflection Questions
+    st.write("### Reflection Questions:")
+    student_name = st.text_input("Enter your name:", key="student_name")
+    q1 = st.text_area("1. How does the regenerated image compare to the original?", key="q1")
+    q2 = st.text_area("2. How does the mask size affect the quality of regeneration?", key="q2")
+    q3 = st.text_area("3. What are the limitations of this lightweight inpainting method?", key="q3")
+
+    if st.button("Save and Download Responses"):
+        if student_name and q1 and q2 and q3:
+            save_responses(student_name, q1, q2, q3)
+            excel_data = generate_excel_responses()
+            st.download_button(
+                label="Download Responses as Excel",
+                data=excel_data,
+                file_name=f"{student_name}_responses.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+            st.success("Your responses have been saved!")
+        else:
+            st.error("Please answer all the questions and provide your name.")
 
 # Integrate Self-Supervised Learning Page into Navigation
 page = st.sidebar.selectbox("Select a Page", ["Prompt Engineering", "Ethics in AI", "Self-Supervised Learning"], key="page_selector")
