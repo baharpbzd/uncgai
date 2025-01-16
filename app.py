@@ -218,11 +218,11 @@ def self_supervised_learning_page():
     uploaded_file = st.file_uploader("Upload an Image (JPG or PNG)", type=["jpg", "png", "jpeg"])
     if uploaded_file is not None:
         original_image = Image.open(uploaded_file).convert("RGB")
-        st.image(original_image, caption="Original Image", use_column_width=True)
-
+        # Resize the image to 512x512 for efficient processing
+        original_image = original_image.resize((512, 512))
         # Step 2: Adjust Mask Size
         st.subheader("Step 2: Adjust Mask Size")
-        mask_size = st.slider("Select Mask Size (percentage of image):", 10, 50, 30)
+        mask_size = st.slider("Select Mask Size (percentage of image):", 5, 20, 10)
 
         def mask_image(image, mask_percentage):
             image = np.array(image)
