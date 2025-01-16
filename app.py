@@ -139,9 +139,10 @@ def generate_response(api_key, prompt):
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}],
-        max_tokens=150,
+        max_tokens=512,
         temperature=0.7
     )
+    return response.choices[0].message["content"].strip()
     return response.choices[0].message["content"].strip()
 
 # Prompt Engineering Page
