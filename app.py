@@ -204,32 +204,6 @@ def ethics_in_ai_page():
     - **Accountability**: Defining who is responsible for the decisions made by AI systems.
     """)
 
-# Set page configuration
-st.set_page_config(page_title="AI Education App", layout="wide")
-
-# Initialize session state for responses
-if 'responses' not in st.session_state:
-    st.session_state.responses = []
-
-# Function to save responses
-def save_responses(student_name, q1, q2, q3):
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    st.session_state.responses.append({
-        "Timestamp": timestamp,
-        "Student Name": student_name,
-        "Q1": q1,
-        "Q2": q2,
-        "Q3": q3
-    })
-
-# Generate Excel from responses
-def generate_excel_responses():
-    df = pd.DataFrame(st.session_state.responses)
-    output = BytesIO()
-    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-        df.to_excel(writer, index=False, sheet_name='Responses')
-    return output.getvalue()
-
 # Self-Supervised Learning Page
 def self_supervised_learning_page():
     st.title("Introduction to Self-Supervised Learning")
@@ -281,37 +255,13 @@ def self_supervised_learning_page():
             except Exception as e:
                 st.error(f"Error during inpainting: {str(e)}")
 
-    # Reflection Questions
-    st.write("### Reflection Questions:")
-    st.write("Please answer the following questions. Your responses will be saved and can be downloaded as an Excel file for submission.")
-    student_name = st.text_input("Enter your name:", key="student_name")
-    q1 = st.text_area("1. How does the regenerated image compare to the original?", key="q1")
-    q2 = st.text_area("2. How does the mask size affect the quality of regeneration?", key="q2")
-    q3 = st.text_area("3. What are the limitations of this lightweight inpainting method?", key="q3")
-
-    if st.button("Save and Download Responses"):
-        if student_name and q1 and q2 and q3:
-            save_responses(student_name, q1, q2, q3)
-            excel_data = generate_excel_responses()
-            file_name = f"{student_name}_responses_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
-            st.download_button(
-                label="Download Responses as Excel",
-                data=excel_data,
-                file_name=file_name,
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
-            st.success("Your responses have been saved and are ready for download!")
-        else:
-            missing_fields = []
-            if not student_name:
-                missing_fields.append("name")
-            if not q1:
-                missing_fields.append("answer to question 1")
-            if not q2:
-                missing_fields.append("answer to question 2")
-            if not q3:
-                missing_fields.append("answer to question 3")
-            st.error(f"Please provide the following: {', '.join(missing_fields)}.")
+        # Reflection Questions
+        st.write("### Reflection Questions:")
+        st.write("""
+        1. How does the regenerated image compare to the original?
+        2. How does the mask size affect the quality of regeneration?
+        3. What are the limitations of this lightweight inpainting method?
+        """)
 
 # Integrate Self-Supervised Learning Page into Navigation
 page = st.sidebar.selectbox("Select a Page", ["Prompt Engineering", "Ethics in AI", "Self-Supervised Learning"], key="page_selector")
@@ -321,4 +271,4 @@ if page == "Prompt Engineering":
 elif page == "Ethics in AI":
     ethics_in_ai_page()
 elif page == "Self-Supervised Learning":
-    self_supervised_learning_page()
+    self_supervised_learning_page()"
