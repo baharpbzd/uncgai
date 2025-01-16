@@ -205,7 +205,6 @@ def ethics_in_ai_page():
     """)
 
 # Self-Supervised Learning Page
-# Self-Supervised Learning Page
 def self_supervised_learning_page():
     st.title("Introduction to Self-Supervised Learning")
     st.write("""
@@ -218,7 +217,7 @@ def self_supervised_learning_page():
     uploaded_file = st.file_uploader("Upload an Image (JPG or PNG)", type=["jpg", "png", "jpeg"])
     if uploaded_file is not None:
         original_image = Image.open(uploaded_file).convert("RGB")
-        st.image(original_image, caption="Original Image", use_column_width=True)
+        st.image(original_image, caption="Original Image", use_container_width=True)
 
         # Step 2: Adjust Mask Size
         st.subheader("Step 2: Adjust Mask Size")
@@ -241,7 +240,7 @@ def self_supervised_learning_page():
             return Image.fromarray(masked_image), mask
 
         masked_image, mask = mask_image(original_image, mask_size)
-        st.image(masked_image, caption=f"Masked Image ({mask_size}% masked)", use_column_width=True)
+        st.image(masked_image, caption=f"Masked Image ({mask_size}% masked)", use_container_width=True)
 
         # Step 3: Regenerate the Masked Area Using OpenCV
         st.subheader("Step 3: Regenerate the Masked Area")
@@ -252,7 +251,7 @@ def self_supervised_learning_page():
                 inpainted_image = cv2.inpaint(
                     original_np, mask, inpaintRadius=3, flags=cv2.INPAINT_TELEA
                 )
-                st.image(Image.fromarray(inpainted_image), caption="Regenerated Image", use_column_width=True)
+                st.image(Image.fromarray(inpainted_image), caption="Regenerated Image", use_container_width=True)
             except Exception as e:
                 st.error(f"Error during inpainting: {str(e)}")
 
