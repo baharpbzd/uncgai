@@ -283,12 +283,3 @@ elif page == "Ethics in AI":
     ethics_in_ai_page()
 elif page == "Self-Supervised Learning":
     self_supervised_learning_page()
-page = st.sidebar.selectbox("Select a Page", ["Prompt Engineering", "Ethics in AI", "Self-Supervised Learning"], key="page_selector")
-page = st.sidebar.selectbox("Select a Page", ["Prompt Engineering", "Ethics in AI", "Self-Supervised Learning"], key="page_selector")
-
-if page == "Prompt Engineering":
-    prompt_engineering_page()
-elif page == "Ethics in AI":
-    ethics_in_ai_page()
-elif page == "Self-Supervised Learning":
-    self_supervised_learning_page()
