@@ -271,4 +271,4 @@ if page == "Prompt Engineering":
 elif page == "Ethics in AI":
     ethics_in_ai_page()
 elif page == "Self-Supervised Learning":
-    self_supervised_learning_page()"
+    self_supervised_learning_page()
