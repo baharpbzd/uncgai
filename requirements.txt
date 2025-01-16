@@ -11,4 +11,3 @@ torchvision
 diffusers
 Pillow
 numpy
-transformers
