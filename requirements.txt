@@ -6,3 +6,8 @@ gspread
 oauth2client
 requests
 xlsxwriter
+torch
+torchvision
+diffusers
+Pillow
+numpy
