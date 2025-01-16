@@ -8,7 +8,6 @@ from PIL import Image, UnidentifiedImageError
 import random
 import requests
 import diffusers
-import transformers
 
 # Set page configuration
 st.set_page_config(page_title="AI Education App", layout="wide")
