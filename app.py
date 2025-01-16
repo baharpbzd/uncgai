@@ -205,13 +205,11 @@ def ethics_in_ai_page():
     """)
 
 # Self-Supervised Learning Page
-# Self-Supervised Learning Page
-# Self-Supervised Learning Page
 def self_supervised_learning_page():
     st.title("Introduction to Self-Supervised Learning")
     st.write("""
     Self-supervised learning (SSL) is a way for machines to learn from data without labels. 
-    It helps models understand patterns and representations in the data by solving simple tasks like filling in the blanks or comparing images.
+    In this exercise, you will upload an image, mask a portion of it, and observe how AI regenerates the missing part locally.
     """)
 
     # Step 1: Upload an Image
@@ -225,7 +223,6 @@ def self_supervised_learning_page():
         st.subheader("Step 2: Adjust Mask Size")
         mask_size = st.slider("Select Mask Size (percentage of image):", 10, 50, 30)
 
-        # Function to mask image
         def mask_image(image, mask_percentage):
             image = np.array(image)
             mask = np.zeros_like(image)
@@ -243,42 +240,38 @@ def self_supervised_learning_page():
         masked_image = mask_image(original_image, mask_size)
         st.image(masked_image, caption=f"Masked Image ({mask_size}% masked)", use_column_width=True)
 
-        # Step 3: Predict Masked Area
-        st.subheader("Step 3: Predict the Masked Area")
-        st.write("""
-        Use GPT to predict the content of the masked area based on the visible parts of the image.
-        """)
+        # Step 3: Regenerate the Masked Area Locally
+        st.subheader("Step 3: Regenerate the Masked Area Locally")
+        if st.button("Regenerate Masked Area"):
+            try:
+                from diffusers import StableDiffusionInpaintPipeline
+                import torch
 
-        api_key = st.text_input("Enter your OpenAI API Key:", type="password")
-        student_name = st.text_input("Enter your name:")
+                # Load Stable Diffusion Inpainting Model
+                pipe = StableDiffusionInpaintPipeline.from_pretrained(
+                    "runwayml/stable-diffusion-inpainting",
+                    torch_dtype=torch.float32
+                ).to("cuda" if torch.cuda.is_available() else "cpu")
 
-        if st.button("Submit for Prediction"):
-            if api_key:
-                try:
-                    # Generate a description of the visible area
-                    visible_description = f"The visible part of the image shows a {100 - mask_size}% area, likely of an object like an animal."
+                # Resize images to 512x512 for Stable Diffusion
+                original_image = original_image.resize((512, 512))
+                masked_image = masked_image.resize((512, 512))
 
-                    # Generate GPT prompt
-                    prompt = f"Based on the following description of an image: '{visible_description}', predict what might be in the masked area."
+                # Perform inpainting
+                result = pipe(prompt="A high-quality photo of the missing part of an object.", 
+                              image=original_image, mask_image=masked_image).images[0]
 
-                    # Use GPT for prediction
-                    openai.api_key = api_key
-                    prediction = generate_response(api_key, prompt)
-
-                    # Display GPT Prediction
-                    st.markdown(f"**GPT Prediction:** {prediction}")
-                    save_interaction(student_name, prompt, prediction)
-                except Exception as e:
-                    st.error(f"Prediction failed: {str(e)}")
-            else:
-                st.error("Please enter your OpenAI API key to proceed.")
+                # Display result
+                st.image(result, caption="Regenerated Image", use_column_width=True)
+            except Exception as e:
+                st.error(f"Error during inpainting: {str(e)}")
 
         # Reflection Questions
         st.write("### Reflection Questions:")
         st.write("""
-        1. How does increasing the mask size impact GPT's predictions?
-        2. Why do you think GPT struggles with larger mask sizes?
-        3. How does this relate to self-supervised learning in AI systems?
+        1. How does the regenerated image compare to the original?
+        2. How does the mask size affect the quality of regeneration?
+        3. What are the potential applications of this technology in real-world scenarios?
         """)
 
 # Sidebar Navigation
@@ -290,4 +283,12 @@ elif page == "Ethics in AI":
     ethics_in_ai_page()
 elif page == "Self-Supervised Learning":
     self_supervised_learning_page()
+page = st.sidebar.selectbox("Select a Page", ["Prompt Engineering", "Ethics in AI", "Self-Supervised Learning"], key="page_selector")
+page = st.sidebar.selectbox("Select a Page", ["Prompt Engineering", "Ethics in AI", "Self-Supervised Learning"], key="page_selector")
 
+if page == "Prompt Engineering":
+    prompt_engineering_page()
+elif page == "Ethics in AI":
+    ethics_in_ai_page()
+elif page == "Self-Supervised Learning":
+    self_supervised_learning_page()
