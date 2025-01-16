@@ -206,6 +206,7 @@ def ethics_in_ai_page():
 
 # Self-Supervised Learning Page
 # Self-Supervised Learning Page
+# Self-Supervised Learning Page
 def self_supervised_learning_page():
     st.title("Introduction to Self-Supervised Learning")
     st.write("""
@@ -224,6 +225,7 @@ def self_supervised_learning_page():
         st.subheader("Step 2: Adjust Mask Size")
         mask_size = st.slider("Select Mask Size (percentage of image):", 10, 50, 30)
 
+        # Function to mask image
         def mask_image(image, mask_percentage):
             image = np.array(image)
             mask = np.zeros_like(image)
@@ -278,62 +280,6 @@ def self_supervised_learning_page():
         2. Why do you think GPT struggles with larger mask sizes?
         3. How does this relate to self-supervised learning in AI systems?
         """)
-        response = requests.get("https://cataas.com/cat/orange,cute", timeout=10)
-        response.raise_for_status()
-        example_image = Image.open(BytesIO(response.content)).convert("RGB")
-
-        # Masking Example
-        mask_size = st.slider("Select Mask Size (percentage of image):", 10, 50, 30)
-
-        def mask_image(image, mask_percentage):
-            image = np.array(image)
-            mask = np.zeros_like(image)
-            height, width, _ = image.shape
-            mask_height = int((mask_percentage / 100) * height)
-            mask_width = int((mask_percentage / 100) * width)
-
-            start_x = random.randint(0, width - mask_width)
-            start_y = random.randint(0, height - mask_height)
-
-            mask[start_y:start_y + mask_height, start_x:start_x + mask_width, :] = 255
-            masked_image = np.where(mask == 255, 0, image)
-            return Image.fromarray(masked_image.astype("uint8"))
-
-        masked_image = mask_image(example_image, mask_size)
-        st.image(masked_image, caption=f"Masked Image ({mask_size}% masked)", width=300)
-
-        # Step 2: Reveal Original
-        st.subheader("Step 2: Reveal the Original Image")
-        st.image(example_image, caption="Original Image", width=300)
-
-        st.write("Try increasing or decreasing the mask size to see how much of the image remains recognizable.")
-
-        # Step 3: ChatGPT Prediction Challenge
-        st.subheader("Step 3: Predict the Masked Area")
-        api_key = st.text_input("Enter your OpenAI API Key:", type="password")
-        student_name = st.text_input("Enter your name:")
-
-        if st.button("Submit for Prediction"):
-            if api_key and student_name:
-                openai.api_key = api_key
-                masked_image_bytes = BytesIO()
-                masked_image.save(masked_image_bytes, format="PNG")
-                masked_image_bytes.seek(0)
-                try:
-                    # Use ChatGPT to provide predictions
-                    prompt = "Describe the missing part of this image based on the context of the visible areas."
-                    prediction = generate_response(api_key, prompt)
-                    st.markdown(f"**GPT Prediction:** {prediction}")
-                    save_interaction(student_name, prompt, prediction)
-                except Exception as e:
-                    st.error(f"Prediction failed: {str(e)}")
-            else:
-                st.error("Please enter your API key and name to submit.")
-
-        st.write("Your task: Adjust the mask size and observe the prediction quality. Find the maximum mask size where GPT still provides an accurate prediction.")
-
-    except (requests.RequestException, UnidentifiedImageError) as e:
-        st.error("Failed to load the example image. Please check your internet connection or try again later.")
 
 # Sidebar Navigation
 page = st.sidebar.selectbox("Select a Page", ["Prompt Engineering", "Ethics in AI", "Self-Supervised Learning"], key="page_selector")
@@ -345,12 +291,3 @@ elif page == "Ethics in AI":
 elif page == "Self-Supervised Learning":
     self_supervised_learning_page()
 
-# Sidebar Navigation
-page = st.sidebar.selectbox("Select a Page", ["Prompt Engineering", "Ethics in AI", "Self-Supervised Learning"], key="page_selector")
-
-if page == "Prompt Engineering":
-    prompt_engineering_page()
-elif page == "Ethics in AI":
-    ethics_in_ai_page()
-elif page == "Self-Supervised Learning":
-    self_supervised_learning_page()
