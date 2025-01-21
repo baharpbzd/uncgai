@@ -288,15 +288,27 @@ def supervised_unsupervised_page():
 
     if 'product_data' not in st.session_state:
         st.session_state.product_data = pd.DataFrame({
-            'Price': np.random.randint(10, 500, 100),
-            'Rating': np.random.uniform(1, 5, 100).round(1),
-            'Cluster': np.random.choice([1, 2, 3], size=100)
+            'Price': np.concatenate([
+                np.random.randint(10, 100, 30),  # Cluster 1: Low-price products
+                np.random.randint(100, 300, 40),  # Cluster 2: Mid-price products
+                np.random.randint(300, 500, 30)  # Cluster 3: High-price products
+            ]),
+            'Rating': np.concatenate([
+                np.random.uniform(1, 2.5, 30),  # Cluster 1: Lower ratings
+                np.random.uniform(2.5, 4, 40),  # Cluster 2: Medium ratings
+                np.random.uniform(4, 5, 30)  # Cluster 3: High ratings
+            ]).round(1),
+            'Cluster': np.concatenate([
+                np.full(30, 1),  # Cluster 1
+                np.full(40, 2),  # Cluster 2
+                np.full(30, 3)  # Cluster 3
+            ])
         })
 
     product_data = st.session_state.product_data
     selected_cluster = st.selectbox("Select a Cluster to Highlight:", product_data['Cluster'].unique())
 
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(8, 6))  # Resized visualization
     for cluster in product_data['Cluster'].unique():
         cluster_points = product_data[product_data['Cluster'] == cluster]
         alpha = 1.0 if cluster == selected_cluster else 0.3
