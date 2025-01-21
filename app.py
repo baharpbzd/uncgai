@@ -308,7 +308,7 @@ def supervised_unsupervised_page():
     product_data = st.session_state.product_data
     selected_cluster = st.selectbox("Select a Cluster to Highlight:", product_data['Cluster'].unique())
 
-    fig, ax = plt.subplots(figsize=(10, 8))  # Resized visualization
+    fig, ax = plt.subplots(figsize=(8, 6))  # Resized visualization
     for cluster in product_data['Cluster'].unique():
         cluster_points = product_data[product_data['Cluster'] == cluster]
         alpha = 1.0 if cluster == selected_cluster else 0.3
