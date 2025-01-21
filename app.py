@@ -281,36 +281,33 @@ def supervised_unsupervised_page():
     approval = "Approved" if (income > 5000 and credit_score > 600) else "Rejected"
     st.write(f"Loan Status: **{approval}**")
 
-    # Unsupervised Learning Section
-    st.header("Unsupervised Learning")
-    st.write("Unsupervised learning identifies patterns in unlabeled data.")
-    st.write("### Example: Segmenting Customers Based on Income and Spending")
+# Unsupervised Learning Section
+st.header("Unsupervised Learning")
+st.write("Unsupervised learning identifies patterns in unlabeled data.")
+st.write("### Example: Clustering Products Based on Price and Customer Ratings")
 
-    customer_data = pd.DataFrame({
-        'Income': np.random.randint(2000, 20000, 50),
-        'Spending': np.random.randint(500, 15000, 50)
-    })
-    customer_data['Cluster'] = np.random.choice([1, 2, 3], size=len(customer_data))
+# Generate sample product data
+product_data = pd.DataFrame({
+    'Price': np.random.randint(10, 500, 100),
+    'Rating': np.random.uniform(1, 5, 100).round(1),
+    'Cluster': np.random.choice([1, 2, 3], size=100)
+})
 
-    selected_cluster = st.selectbox("Select a Cluster to Highlight:", customer_data['Cluster'].unique())
+selected_cluster = st.selectbox("Select a Product Cluster to Highlight:", product_data['Cluster'].unique())
 
-    fig, ax = plt.subplots()
-    for cluster in customer_data['Cluster'].unique():
-        cluster_points = customer_data[customer_data['Cluster'] == cluster]
-        alpha = 1.0 if cluster == selected_cluster else 0.3
-        ax.scatter(cluster_points['Income'], cluster_points['Spending'], label=f'Cluster {cluster}', alpha=alpha)
-    ax.set_xlabel('Income')
-    ax.set_ylabel('Spending')
-    ax.legend()
-    st.pyplot(fig)
+# Plot clusters
+fig, ax = plt.subplots()
+for cluster in product_data['Cluster'].unique():
+    cluster_points = product_data[product_data['Cluster'] == cluster]
+    alpha = 1.0 if cluster == selected_cluster else 0.3
+    ax.scatter(cluster_points['Price'], cluster_points['Rating'], label=f'Cluster {cluster}', alpha=alpha)
+ax.set_xlabel('Price ($)')
+ax.set_ylabel('Rating (1-5)')
+ax.legend()
+st.pyplot(fig)
 
-    # Reflection Section
-    st.header("Reflection Questions")
-    st.write("""
-    1. What factors might influence the loan approval decision?
-    2. What insights can you gain about customer segments based on income and spending patterns?
-    """)
-    st.text_area("Your Reflections:")
+st.write(f"Cluster {selected_cluster} contains products with specific price and rating patterns.")
+
 
 # Update Navigation
 page = st.sidebar.selectbox("Select a Page", ["Prompt Engineering", "Ethics in AI", "Self-Supervised Learning", "Supervised and Unsupervised Learning"], key="page_selector")
