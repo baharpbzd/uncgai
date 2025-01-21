@@ -273,24 +273,32 @@ def supervised_unsupervised_page():
     # Supervised Learning Section
     st.header("Supervised Learning")
     st.write("Supervised learning predicts outcomes based on labeled data.")
-    st.write("### Example: Predicting Stock Prices")
-    stock_price = st.slider("Select a historical stock price (e.g., $):", 10, 200, 100)
-    predicted_price = 1.5 * stock_price + 20  # Example regression formula
-    st.write(f"Predicted Stock Price: ${predicted_price:.2f}")
+    st.write("### Example: Predicting Loan Approval")
+
+    st.write("Select values for Income and Credit Score to see if a loan would be approved.")
+    income = st.slider("Income (in $):", 2000, 20000, 8000, 100)
+    credit_score = st.slider("Credit Score:", 300, 850, 650, 10)
+    approval = "Approved" if (income > 5000 and credit_score > 600) else "Rejected"
+    st.write(f"Loan Status: **{approval}**")
 
     # Unsupervised Learning Section
     st.header("Unsupervised Learning")
     st.write("Unsupervised learning identifies patterns in unlabeled data.")
-    st.write("### Example: Segmenting Customers Based on Spending Habits")
+    st.write("### Example: Segmenting Customers Based on Income and Spending")
+
     customer_data = pd.DataFrame({
-        'Income': [30, 40, 50, 60, 70],
-        'Spending': [20, 30, 50, 60, 80],
-        'Cluster': [1, 1, 2, 2, 3]
+        'Income': np.random.randint(2000, 20000, 50),
+        'Spending': np.random.randint(500, 15000, 50)
     })
+    customer_data['Cluster'] = np.random.choice([1, 2, 3], size=len(customer_data))
+
+    selected_cluster = st.selectbox("Select a Cluster to Highlight:", customer_data['Cluster'].unique())
+
     fig, ax = plt.subplots()
     for cluster in customer_data['Cluster'].unique():
         cluster_points = customer_data[customer_data['Cluster'] == cluster]
-        ax.scatter(cluster_points['Income'], cluster_points['Spending'], label=f'Cluster {cluster}')
+        alpha = 1.0 if cluster == selected_cluster else 0.3
+        ax.scatter(cluster_points['Income'], cluster_points['Spending'], label=f'Cluster {cluster}', alpha=alpha)
     ax.set_xlabel('Income')
     ax.set_ylabel('Spending')
     ax.legend()
@@ -299,8 +307,8 @@ def supervised_unsupervised_page():
     # Reflection Section
     st.header("Reflection Questions")
     st.write("""
-    1. How would you improve the prediction model for stock prices?
-    2. What can you infer about the customer segments from the scatter plot?
+    1. What factors might influence the loan approval decision?
+    2. What insights can you gain about customer segments based on income and spending patterns?
     """)
     st.text_area("Your Reflections:")
 
