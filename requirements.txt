@@ -11,3 +11,4 @@ torchvision
 Pillow
 numpy
 opencv-python-headless
+matplotlib
