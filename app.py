@@ -1,4 +1,4 @@
-import openai  
+import openai
 import streamlit as st
 import pandas as pd
 import datetime
@@ -7,6 +7,7 @@ import numpy as np
 from PIL import Image, UnidentifiedImageError
 import random
 import requests
+import matplotlib.pyplot as plt
 
 # Set page configuration
 st.set_page_config(page_title="AI Education App", layout="wide")
@@ -143,7 +144,6 @@ def generate_response(api_key, prompt):
         temperature=0.7
     )
     return response.choices[0].message["content"].strip()
-    return response.choices[0].message["content"].strip()
 
 # Prompt Engineering Page
 def prompt_engineering_page():
@@ -263,8 +263,49 @@ def self_supervised_learning_page():
         3. What are the limitations of this lightweight inpainting method?
         """)
 
-# Integrate Self-Supervised Learning Page into Navigation
-page = st.sidebar.selectbox("Select a Page", ["Prompt Engineering", "Ethics in AI", "Self-Supervised Learning"], key="page_selector")
+# Supervised and Unsupervised Learning Page
+def supervised_unsupervised_page():
+    st.title("Supervised and Unsupervised Learning")
+    st.write("""
+    This page introduces supervised and unsupervised machine learning concepts with interactive examples in finance and marketing.
+    """)
+
+    # Supervised Learning Section
+    st.header("Supervised Learning")
+    st.write("Supervised learning predicts outcomes based on labeled data.")
+    st.write("### Example: Predicting Stock Prices")
+    stock_price = st.slider("Select a historical stock price (e.g., $):", 10, 200, 100)
+    predicted_price = 1.5 * stock_price + 20  # Example regression formula
+    st.write(f"Predicted Stock Price: ${predicted_price:.2f}")
+
+    # Unsupervised Learning Section
+    st.header("Unsupervised Learning")
+    st.write("Unsupervised learning identifies patterns in unlabeled data.")
+    st.write("### Example: Segmenting Customers Based on Spending Habits")
+    customer_data = pd.DataFrame({
+        'Income': [30, 40, 50, 60, 70],
+        'Spending': [20, 30, 50, 60, 80],
+        'Cluster': [1, 1, 2, 2, 3]
+    })
+    fig, ax = plt.subplots()
+    for cluster in customer_data['Cluster'].unique():
+        cluster_points = customer_data[customer_data['Cluster'] == cluster]
+        ax.scatter(cluster_points['Income'], cluster_points['Spending'], label=f'Cluster {cluster}')
+    ax.set_xlabel('Income')
+    ax.set_ylabel('Spending')
+    ax.legend()
+    st.pyplot(fig)
+
+    # Reflection Section
+    st.header("Reflection Questions")
+    st.write("""
+    1. How would you improve the prediction model for stock prices?
+    2. What can you infer about the customer segments from the scatter plot?
+    """)
+    st.text_area("Your Reflections:")
+
+# Update Navigation
+page = st.sidebar.selectbox("Select a Page", ["Prompt Engineering", "Ethics in AI", "Self-Supervised Learning", "Supervised and Unsupervised Learning"], key="page_selector")
 
 if page == "Prompt Engineering":
     prompt_engineering_page()
@@ -272,3 +313,5 @@ elif page == "Ethics in AI":
     ethics_in_ai_page()
 elif page == "Self-Supervised Learning":
     self_supervised_learning_page()
+elif page == "Supervised and Unsupervised Learning":
+    supervised_unsupervised_page()
