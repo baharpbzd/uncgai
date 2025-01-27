@@ -385,10 +385,11 @@ def fine_tuning_page():
     # Testing the Chatbot
     st.subheader("Step 3: Test the Fine-Tuned Chatbot")
     api_key = st.text_input("Enter your OpenAI API Key:", type="password")
+    student_name = st.text_input("Enter your name:")
     test_review = st.text_input("Enter a sample review:")
 
     if st.button("Generate Response"):
-        if selected_examples and test_review and api_key:
+        if selected_examples and test_review and api_key and student_name:
             try:
                 # Simulate response generation based on selected examples
                 prompt = f"You are a chatbot trained to handle restaurant reviews. Here are some examples:\n"
@@ -398,10 +399,26 @@ def fine_tuning_page():
 
                 response = generate_response_with_params(api_key, prompt, temperature, max_tokens)
                 st.success(f"Chatbot Response: {response}")
+
+                # Save interaction
+                save_interaction(student_name, test_review, response)
+
             except Exception as e:
                 st.error(f"Error: {str(e)}")
         else:
-            st.error("Please select examples, enter a review, and provide your API key to test the chatbot.")
+            st.error("Please select examples, enter a review, provide your API key, and your name to test the chatbot.")
+
+    # Provide Download Option for Interactions
+    if st.session_state.interactions:
+        st.subheader("Step 4: Download Your Interactions")
+        st.write("Download your interactions as an Excel file and upload it to Canvas.")
+        excel_data = generate_excel()
+        st.download_button(
+            label="Download Interactions",
+            data=excel_data,
+            file_name=f"{student_name}_interactions.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
 
     # Reflection Section
     st.subheader("Reflection Questions")
@@ -411,7 +428,6 @@ def fine_tuning_page():
     3. What are the limitations of fine-tuning with a small dataset?
     4. What happens when you add or remove specific types of examples (e.g., complaints, compliments)?
     """)
-    
 # Update Navigation
 page = st.sidebar.selectbox(
     "Select a Page",
