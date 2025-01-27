@@ -359,7 +359,12 @@ def fine_tuning_page():
         {"review": "The service was slow.", "response": "We apologize for the delay and will work to improve."},
         {"review": "Do you have vegan options?", "response": "Yes, we offer several vegan dishes. Let me assist you!"},
         {"review": "The ambiance was perfect.", "response": "Thank you! We're glad you liked the atmosphere."},
-        {"review": "The food was overpriced.", "response": "We appreciate your feedback and will review our pricing."}
+        {"review": "The food was overpriced.", "response": "We appreciate your feedback and will review our pricing."},
+        {"review": "Can you recommend a gluten-free dessert?", "response": "Certainly! We have a delicious gluten-free chocolate cake."},
+        {"review": "The delivery was late.", "response": "We sincerely apologize for the delay. We are working on improving our delivery times."},
+        {"review": "The waiter was very rude.", "response": "We are sorry to hear about your experience. We will address this with our staff."},
+        {"review": "I loved the ambiance, but the food was cold.", "response": "Thank you for the feedback! We are glad you enjoyed the ambiance and will work on serving hot food."},
+        {"review": "The vegetarian options are limited.", "response": "We appreciate your input and will expand our vegetarian menu soon."}
     ]
 
     selected_examples = []
@@ -404,7 +409,9 @@ def fine_tuning_page():
     1. How did the selected examples influence the chatbot's response?
     2. How does adjusting the creativity level (temperature) affect the chatbot's behavior?
     3. What are the limitations of fine-tuning with a small dataset?
+    4. What happens when you add or remove specific types of examples (e.g., complaints, compliments)?
     """)
+    
 # Update Navigation
 page = st.sidebar.selectbox(
     "Select a Page",
