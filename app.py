@@ -386,3 +386,30 @@ def fine_tuning_page():
     st.write("""
     1. How did the selected examples influence the chatbot's response?
     2. How does adjusting the creativity level (temperature) affect
+    3. What are the limitations of fine-tuning with a small dataset?
+    """)
+
+# Update Navigation
+page = st.sidebar.selectbox(
+    "Select a Page",
+    [
+        "Prompt Engineering",
+        "Ethics in AI",
+        "Self-Supervised Learning",
+        "Supervised and Unsupervised Learning",
+        "Fine-Tuning LLM Models"
+    ],
+    key="page_selector"
+)
+
+if page == "Prompt Engineering":
+    prompt_engineering_page()
+elif page == "Ethics in AI":
+    ethics_in_ai_page()
+elif page == "Self-Supervised Learning":
+    self_supervised_learning_page()
+elif page == "Supervised and Unsupervised Learning":
+    supervised_unsupervised_page()
+elif page == "Fine-Tuning LLM Models":
+    fine_tuning_page()
+
