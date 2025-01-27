@@ -326,6 +326,17 @@ def supervised_unsupervised_page():
     """)
     st.text_area("Your Reflections:")
 
+# Generate AI Response with Custom Parameters
+def generate_response_with_params(api_key, prompt, temperature, max_tokens):
+    openai.api_key = api_key
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=max_tokens,
+        temperature=temperature
+    )
+    return response.choices[0].message["content"].strip()
+
 # Fine-Tuning LLM Models Page
 def fine_tuning_page():
     st.title("Fine-Tuning LLM Models")
@@ -380,7 +391,7 @@ def fine_tuning_page():
                     prompt += f"Review: {example['review']}\nResponse: {example['response']}\n"
                 prompt += f"\nNow respond to this review:\nReview: {test_review}\nResponse:"
 
-                response = generate_response(api_key, prompt, temperature, max_tokens)
+                response = generate_response_with_params(api_key, prompt, temperature, max_tokens)
                 st.success(f"Chatbot Response: {response}")
             except Exception as e:
                 st.error(f"Error: {str(e)}")
@@ -394,7 +405,6 @@ def fine_tuning_page():
     2. How does adjusting the creativity level (temperature) affect the chatbot's behavior?
     3. What are the limitations of fine-tuning with a small dataset?
     """)
-
 # Update Navigation
 page = st.sidebar.selectbox(
     "Select a Page",
