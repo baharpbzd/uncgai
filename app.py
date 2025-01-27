@@ -358,34 +358,40 @@ def fine_tuning_page():
 
     # Parameter Tuning
     st.subheader("Step 2: Adjust Parameters")
+    st.write("""
+    Adjust the parameters below to influence how the model responds:
+    - **Creativity (Temperature):** Higher values (e.g., 1.0) make responses more creative and random. Lower values (e.g., 0.0) make them more deterministic.
+    - **Response Length (Max Tokens):** Adjust the length of the chatbot's response.
+    """)
     temperature = st.slider("Creativity Level (Temperature)", 0.0, 1.0, 0.7)
-    max_length = st.slider("Maximum Response Length", 10, 100, 50)
+    max_tokens = st.slider("Maximum Response Length (Tokens)", 10, 100, 50)
 
     # Testing the Chatbot
     st.subheader("Step 3: Test the Fine-Tuned Chatbot")
+    api_key = st.text_input("Enter your OpenAI API Key:", type="password")
     test_review = st.text_input("Enter a sample review:")
 
     if st.button("Generate Response"):
-        if selected_examples and test_review:
-            # Simulate response generation based on selected examples
-            matched_response = None
-            for example in selected_examples:
-                if test_review.lower() in example['review'].lower():
-                    matched_response = example['response']
-                    break
+        if selected_examples and test_review and api_key:
+            try:
+                # Simulate response generation based on selected examples
+                prompt = f"You are a chatbot trained to handle restaurant reviews. Here are some examples:\n"
+                for example in selected_examples:
+                    prompt += f"Review: {example['review']}\nResponse: {example['response']}\n"
+                prompt += f"\nNow respond to this review:\nReview: {test_review}\nResponse:"
 
-            if matched_response:
-                st.success(f"Chatbot Response: {matched_response}")
-            else:
-                st.warning("Chatbot Response: I'm sorry, I don't have enough information to respond to that.")
+                response = generate_response(api_key, prompt, temperature, max_tokens)
+                st.success(f"Chatbot Response: {response}")
+            except Exception as e:
+                st.error(f"Error: {str(e)}")
         else:
-            st.error("Please select examples and enter a review to test the chatbot.")
+            st.error("Please select examples, enter a review, and provide your API key to test the chatbot.")
 
     # Reflection Section
     st.subheader("Reflection Questions")
     st.write("""
     1. How did the selected examples influence the chatbot's response?
-    2. How does adjusting the creativity level (temperature) affect
+    2. How does adjusting the creativity level (temperature) affect the chatbot's behavior?
     3. What are the limitations of fine-tuning with a small dataset?
     """)
 
