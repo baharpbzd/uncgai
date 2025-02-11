@@ -8,6 +8,8 @@ from PIL import Image, UnidentifiedImageError
 import random
 import requests
 import matplotlib.pyplot as plt
+import pytesseract
+import fitz
 
 # Set page configuration
 st.set_page_config(page_title="AI Education App", layout="wide")
