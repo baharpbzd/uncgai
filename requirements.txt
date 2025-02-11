@@ -12,5 +12,4 @@ Pillow
 numpy
 opencv-python-headless
 matplotlib
-pytesseract
-fitz
+PyPDF2
