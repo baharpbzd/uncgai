@@ -145,7 +145,6 @@ def generate_response(api_key, prompt):
     )
     return response.choices[0].message["content"].strip()
 
-# Prompt Engineering Assignment Page
 def prompt_engineering_assignment_page():
     st.title("Prompt Engineering Assignment: Warranty Analysis")
 
@@ -157,27 +156,19 @@ def prompt_engineering_assignment_page():
     st.subheader("Upload the Warranty Document (PDF or Image)")
     uploaded_file = st.file_uploader("Upload a file (PDF, PNG, JPG)", type=["pdf", "png", "jpg", "jpeg"])
 
-    # Display uploaded document
+    extracted_text = ""
     if uploaded_file:
-        try:
-            if uploaded_file.type == "application/pdf":
-                st.write("PDF file uploaded. The AI will process the text from the document.")
-            else:
-                image = Image.open(uploaded_file)
-                st.image(image, caption="Uploaded Warranty Document", use_column_width=True)
-        except UnidentifiedImageError:
-            st.error("Invalid image file. Please upload a valid PNG or JPG file.")
+        if uploaded_file.type == "application/pdf":
+            extracted_text = extract_text_from_pdf(uploaded_file)
+        else:
+            extracted_text = extract_text_from_image(uploaded_file)
+
+        # Display extracted text
+        st.subheader("Extracted Warranty Text:")
+        st.text_area("Text from the document:", extracted_text, height=200)
 
     # Step 3: Writing an Effective Prompt
     st.subheader("Write an Effective Prompt")
-    st.write("Create a detailed prompt to generate an AI response analyzing your warranty claim.")
-    st.write("""
-        Your prompt should:
-        - Define a **persona** (e.g., a legal expert or customer service representative).
-        - Provide **context** about your product issue.
-        - State the **task** for the AI (e.g., determine if the warranty covers the issue).
-        - Use **clear language** for effective results.
-    """)
     prompt = st.text_area("Write your prompt here:")
 
     # Generate AI Response Button
@@ -185,22 +176,21 @@ def prompt_engineering_assignment_page():
 
     if generate_button:
         if api_key and student_name and prompt and uploaded_file:
+            full_prompt = f"""
+            You are a warranty specialist assisting a customer. Below is the warranty document text:
+            
+            {extracted_text}
+            
+            The customer has this issue with their product:
+            {prompt}
+            
+            Based on the warranty terms, determine if this issue qualifies for a claim. Explain why or why not.
+            """
+
             try:
-                response = generate_response(api_key, prompt)
-                st.markdown(
-                    f"""
-                    <div style="
-                        background-color: {page_bg_color};
-                        padding: 15px;
-                        border-radius: 10px;
-                        margin-top: 10px;
-                        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-                        color: {font_color};">
-                        {response}
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
+                response = generate_response(api_key, full_prompt)
+                st.subheader("AI Warranty Evaluation:")
+                st.markdown(response)
                 save_interaction(student_name, prompt, response)
                 st.success("Your interaction has been saved locally!")
             except Exception as e:
@@ -208,7 +198,7 @@ def prompt_engineering_assignment_page():
         else:
             st.error("Please provide your name, API key, warranty document, and a prompt.")
 
-    # Download Button for Student Logs
+    # Download Student Logs
     if st.session_state.interactions:
         st.download_button(
             label="Download Interactions as Excel",
@@ -216,7 +206,6 @@ def prompt_engineering_assignment_page():
             file_name=f"{student_name}_interactions.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
-
 # Ethics in AI Page
 def ethics_in_ai_page():
     st.title("Ethics in AI")
