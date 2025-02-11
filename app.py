@@ -149,10 +149,10 @@ def generate_excel():
 def generate_response(api_key, prompt):
     openai.api_key = api_key
     response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4-turbo",
         messages=[{"role": "user", "content": prompt}],
-        max_tokens=512,
-        temperature=0.7
+        max_tokens=1000,
+        temperature=0.5
     )
     return response.choices[0].message["content"].strip()
 
