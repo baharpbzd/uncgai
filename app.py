@@ -144,6 +144,27 @@ def generate_response(api_key, prompt):
         temperature=0.7
     )
     return response.choices[0].message["content"].strip()
+# Function to extract text from PDF
+def extract_text_from_pdf(uploaded_pdf):
+    try:
+        pdf_bytes = uploaded_pdf.read()  # Read file into bytes
+        doc = fitz.open(stream=pdf_bytes, filetype="pdf")  # Open as PyMuPDF document
+        text = "\n".join([page.get_text("text") for page in doc])  # Extract text from pages
+        return text if text.strip() else "No readable text found in PDF."
+    except Exception as e:
+        return f"Error extracting text from PDF: {str(e)}"
+
+# Function to extract text from images using OCR
+def extract_text_from_image(uploaded_image):
+    try:
+        image = Image.open(BytesIO(uploaded_image.read()))  # Convert to image format
+        text = pytesseract.image_to_string(image)  # Run OCR
+        return text.strip() if text.strip() else "No text detected in image."
+    except UnidentifiedImageError:
+        return "Invalid image format. Please upload a valid PNG or JPG file."
+    except Exception as e:
+        return f"Error extracting text from image: {str(e)}"
+
 # New: Prompt Engineering Assignment Page with Text Extraction
 def prompt_engineering_assignment_page():
     st.title("Prompt Engineering Assignment: Warranty Analysis")
