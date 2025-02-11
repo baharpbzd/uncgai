@@ -144,7 +144,7 @@ def generate_response(api_key, prompt):
         temperature=0.7
     )
     return response.choices[0].message["content"].strip()
-
+# New: Prompt Engineering Assignment Page with Text Extraction
 def prompt_engineering_assignment_page():
     st.title("Prompt Engineering Assignment: Warranty Analysis")
 
@@ -158,10 +158,13 @@ def prompt_engineering_assignment_page():
 
     extracted_text = ""
     if uploaded_file:
-        if uploaded_file.type == "application/pdf":
+        file_type = uploaded_file.type
+        if file_type == "application/pdf":
             extracted_text = extract_text_from_pdf(uploaded_file)
-        else:
+        elif file_type in ["image/png", "image/jpeg", "image/jpg"]:
             extracted_text = extract_text_from_image(uploaded_file)
+        else:
+            extracted_text = "Unsupported file type."
 
         # Display extracted text
         st.subheader("Extracted Warranty Text:")
@@ -206,6 +209,7 @@ def prompt_engineering_assignment_page():
             file_name=f"{student_name}_interactions.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
+        
 # Ethics in AI Page
 def ethics_in_ai_page():
     st.title("Ethics in AI")
