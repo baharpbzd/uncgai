@@ -117,6 +117,16 @@ st.markdown(page_style, unsafe_allow_html=True)
 if 'interactions' not in st.session_state:
     st.session_state.interactions = []
 
+# Set max token limit (GPT-3.5 & GPT-4 support ~16,385 tokens, but we use less)
+MAX_TEXT_LENGTH = 3000  # Limit input text to first 3,000 words (~12,000 tokens)
+
+# Function to truncate long text
+def truncate_text(text, max_words=MAX_TEXT_LENGTH):
+    words = text.split()
+    if len(words) > max_words:
+        return " ".join(words[:max_words]) + "...\n\n[Text truncated due to length]"
+    return text
+
 # Save interaction locally in session state
 def save_interaction(student_name, prompt, response):
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -155,7 +165,7 @@ def extract_text_from_pdf(uploaded_pdf):
     except Exception as e:
         return f"Error extracting text from PDF: {str(e)}"
         
-# New: Prompt Engineering Assignment Page with Text Extraction
+# Prompt Engineering Assignment Page with Text Extraction
 def prompt_engineering_assignment_page():
     st.title("Prompt Engineering Assignment: Warranty Analysis")
 
@@ -164,22 +174,19 @@ def prompt_engineering_assignment_page():
     student_name = st.text_input("Enter your name:")
 
     # Step 2: Upload Warranty Document
-    st.subheader("Upload the Warranty Document (PDF or Image)")
-    uploaded_file = st.file_uploader("Upload a file (PDF, PNG, JPG)", type=["pdf", "png", "jpg", "jpeg"])
+    st.subheader("Upload the Warranty Document (PDF Only)")
+    uploaded_file = st.file_uploader("Upload a PDF file", type=["pdf"])
 
     extracted_text = ""
+    truncated_text = ""
+    
     if uploaded_file:
-        file_type = uploaded_file.type
-        if file_type == "application/pdf":
-            extracted_text = extract_text_from_pdf(uploaded_file)
-        elif file_type in ["image/png", "image/jpeg", "image/jpg"]:
-            extracted_text = extract_text_from_image(uploaded_file)
-        else:
-            extracted_text = "Unsupported file type."
+        extracted_text = extract_text_from_pdf(uploaded_file)
+        truncated_text = truncate_text(extracted_text)  # Truncate long text
 
-        # Display extracted text
-        st.subheader("Extracted Warranty Text:")
-        st.text_area("Text from the document:", extracted_text, height=200)
+        # Display extracted text (showing truncated if applicable)
+        st.subheader("Extracted Warranty Text (Truncated if too long):")
+        st.text_area("Text from the document:", truncated_text, height=200)
 
     # Step 3: Writing an Effective Prompt
     st.subheader("Write an Effective Prompt")
@@ -193,7 +200,7 @@ def prompt_engineering_assignment_page():
             full_prompt = f"""
             You are a warranty specialist assisting a customer. Below is the warranty document text:
             
-            {extracted_text}
+            {truncated_text}
             
             The customer has this issue with their product:
             {prompt}
@@ -219,8 +226,7 @@ def prompt_engineering_assignment_page():
             data=generate_excel(),
             file_name=f"{student_name}_interactions.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
-        
+        )        
 # Ethics in AI Page
 def ethics_in_ai_page():
     st.title("Ethics in AI")
