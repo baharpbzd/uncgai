@@ -145,19 +145,46 @@ def generate_response(api_key, prompt):
     )
     return response.choices[0].message["content"].strip()
 
-# Prompt Engineering Page
-def prompt_engineering_page():
-    st.title("Prompt Engineering")
-    st.write("This page is dedicated to teaching students about Prompt Engineering.")
+# Prompt Engineering Assignment Page
+def prompt_engineering_assignment_page():
+    st.title("Prompt Engineering Assignment: Warranty Analysis")
 
+    # Step 1: Enter API Key & Student Name
     api_key = st.text_input("Enter your OpenAI API Key:", type="password")
-    student_name = st.text_input("Enter your name:", key="student_name")
-    prompt = st.text_area("Write a prompt to generate an AI response:")
+    student_name = st.text_input("Enter your name:")
 
+    # Step 2: Upload Warranty Document
+    st.subheader("Upload the Warranty Document (PDF or Image)")
+    uploaded_file = st.file_uploader("Upload a file (PDF, PNG, JPG)", type=["pdf", "png", "jpg", "jpeg"])
+
+    # Display uploaded document
+    if uploaded_file:
+        try:
+            if uploaded_file.type == "application/pdf":
+                st.write("PDF file uploaded. The AI will process the text from the document.")
+            else:
+                image = Image.open(uploaded_file)
+                st.image(image, caption="Uploaded Warranty Document", use_column_width=True)
+        except UnidentifiedImageError:
+            st.error("Invalid image file. Please upload a valid PNG or JPG file.")
+
+    # Step 3: Writing an Effective Prompt
+    st.subheader("Write an Effective Prompt")
+    st.write("Create a detailed prompt to generate an AI response analyzing your warranty claim.")
+    st.write("""
+        Your prompt should:
+        - Define a **persona** (e.g., a legal expert or customer service representative).
+        - Provide **context** about your product issue.
+        - State the **task** for the AI (e.g., determine if the warranty covers the issue).
+        - Use **clear language** for effective results.
+    """)
+    prompt = st.text_area("Write your prompt here:")
+
+    # Generate AI Response Button
     generate_button = st.button("Generate AI Response")
 
     if generate_button:
-        if api_key and student_name and prompt:
+        if api_key and student_name and prompt and uploaded_file:
             try:
                 response = generate_response(api_key, prompt)
                 st.markdown(
@@ -179,13 +206,14 @@ def prompt_engineering_page():
             except Exception as e:
                 st.error(f"Error: {str(e)}")
         else:
-            st.error("Please provide your name, API key, and a prompt.")
+            st.error("Please provide your name, API key, warranty document, and a prompt.")
 
+    # Download Button for Student Logs
     if st.session_state.interactions:
         st.download_button(
             label="Download Interactions as Excel",
             data=generate_excel(),
-            file_name="interactions.xlsx",
+            file_name=f"{student_name}_interactions.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
@@ -442,7 +470,7 @@ page = st.sidebar.selectbox(
 )
 
 if page == "Prompt Engineering":
-    prompt_engineering_page()
+    prompt_engineering_assignment_page()
 elif page == "Ethics in AI":
     ethics_in_ai_page()
 elif page == "Self-Supervised Learning":
