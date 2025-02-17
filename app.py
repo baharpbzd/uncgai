@@ -483,13 +483,26 @@ def fetch_ai_response(api_key, prompt, model, temperature, max_tokens):
 
 # Custom GPT Page
 def custom_gpt_page():
-    st.sidebar.header("Customize Your GPT")
+    gpt_name = st.sidebar.text_input("Give your GPT a name:", "CyberTutor")
+    st.sidebar.header(f"Customize {gpt_name}")
     
     # Require API Key first
     api_key = st.sidebar.text_input("Enter OpenAI API Key:", type="password")
+    
+    
+    st.sidebar.header(f"Customize {gpt_name}")
+    
     # Require API Key first
-    st.title("Custom GPT Assistant")
-    st.sidebar.header("Customize Your GPT")
+    
+    
+    st.title(gpt_name)
+    st.sidebar.header(f"Customize {gpt_name}")
+    
+    # Require API Key first
+    
+    
+    st.title(gpt_name)
+    st.sidebar.header(f"Customize {gpt_name}")
     
     # User input for model configuration
     persona = st.sidebar.text_area("Persona Instructions", "You are an AI tutor specializing in cybersecurity.")
@@ -512,7 +525,12 @@ def custom_gpt_page():
         st.chat_message(msg["role"]).write(msg["content"])
     
     # User input
-    user_input = st.text_area("Ask me anything:", key="user_input", placeholder="Type your message here...")
+    user_input = st.text_area("Ask me anything:", key="user_input", placeholder="Type your message here...
+
+Examples:
+- Explain cybersecurity threats in simple terms.
+- How do I secure my IoT devices?
+- What are common network vulnerabilities?")
     if st.button("Send"):
         if user_input:
             st.session_state.messages.append({"role": "user", "content": user_input})
