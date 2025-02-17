@@ -470,36 +470,45 @@ def fine_tuning_page():
 def custom_gpt_page():
     st.title("Custom GPT Assistant")
     st.sidebar.header("Customize Your GPT")
-    
-    # User input for model configuration
+
+    # User input for API Key
+    api_key = st.sidebar.text_input("Enter OpenAI API Key:", type="password")
+
+    # Model settings
     persona = st.sidebar.text_area("Persona Instructions", "You are an AI tutor specializing in cybersecurity.")
     model = st.sidebar.selectbox("Choose Model", ["gpt-4", "gpt-3.5-turbo"])
     temperature = st.sidebar.slider("Creativity (Temperature)", 0.0, 1.0, 0.7)
     max_tokens = st.sidebar.slider("Max Tokens", 50, 2000, 500)
-    
+
     # Upload optional knowledge base
     uploaded_file = st.sidebar.file_uploader("Upload a Knowledge Base (TXT)", type=["txt"])
     kb_content = ""
     if uploaded_file is not None:
         kb_content = uploaded_file.read().decode("utf-8")
-    
+
     # Initialize chat history
     if "messages" not in st.session_state:
         st.session_state.messages = [{"role": "system", "content": persona + "\n" + kb_content}]
-    
+
     # Display chat history
     for msg in st.session_state.messages:
         st.chat_message(msg["role"]).write(msg["content"])
-    
+
     # User input
     user_input = st.text_area("Ask me anything:")
     if st.button("Send"):
+        if not api_key:
+            st.error("❌ Please enter your OpenAI API key in the sidebar.")
+            return
+
         if user_input:
             st.session_state.messages.append({"role": "user", "content": user_input})
             st.chat_message("user").write(user_input)
-            
-            response = generate_response(st.secrets["OPENAI_API_KEY"], user_input, model, temperature, max_tokens)
-            
+
+            # Generate AI response
+            openai.api_key = api_key  # Use user-provided key
+            response = generate_response(api_key, user_input, model, temperature, max_tokens)
+
             st.session_state.messages.append({"role": "assistant", "content": response})
             st.chat_message("assistant").write(response)
 
