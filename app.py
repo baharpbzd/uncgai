@@ -514,24 +514,8 @@ def fetch_ai_response(api_key, prompt, model, temperature, max_tokens):
 def custom_gpt_page():
     gpt_name = st.sidebar.text_input("Give your GPT a name:", "CyberTutor")
     
-    
     # Require API Key first
     api_key = st.sidebar.text_input("Enter OpenAI API Key:", type="password")
-    
-    
-    
-    
-    # Require API Key first
-    
-    
-    
-    
-    
-    # Require API Key first
-    
-    
-    
-    
     
     # User input for model configuration
     persona = st.sidebar.text_area("Persona Instructions", "You are an AI tutor specializing in cybersecurity.")
@@ -553,29 +537,12 @@ def custom_gpt_page():
     for msg in st.session_state.messages:
         st.chat_message(msg["role"]).write(msg["content"])
     
-    # User input
-    user_input = st.text_area("Ask me anything:", key="user_input", placeholder="Type your message here...
-
-Examples:
-- Explain cybersecurity threats in simple terms.
-- How do I secure my IoT devices?
-- What are common network vulnerabilities?")"Type your message here...
-
-Examples:
-- Explain cybersecurity threats in simple terms.
-- How do I secure my IoT devices?
-- What are common network vulnerabilities?")
-
-Examples:
-- Explain cybersecurity threats in simple terms.
-- How do I secure my IoT devices?
-- What are common network vulnerabilities?")
+# User input
+    user_input = st.text_area("Ask me anything:", key="user_input", placeholder="Type your message here...")
     if st.button("Send"):
         if user_input:
             st.session_state.messages.append({"role": "user", "content": user_input})
             st.chat_message("user").write(user_input)
-            
-            
             
             response = fetch_ai_response(api_key, user_input, model, temperature, max_tokens)
             
