@@ -495,14 +495,44 @@ def fetch_ai_response(api_key, prompt, model, temperature, max_tokens):
         temperature=temperature
     )
     return response.choices[0].message["content"].strip()
+# Initialize session state for interactions
+if 'interactions' not in st.session_state:
+    st.session_state.interactions = []
+
+# Function to generate AI response
+def fetch_ai_response(api_key, prompt, model, temperature, max_tokens):
+    openai.api_key = api_key
+    response = openai.ChatCompletion.create(
+        model=model,
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=max_tokens,
+        temperature=temperature
+    )
+    return response.choices[0].message["content"].strip()
 
 # Custom GPT Page
 def custom_gpt_page():
     gpt_name = st.sidebar.text_input("Give your GPT a name:", "CyberTutor")
     
+    
     # Require API Key first
     api_key = st.sidebar.text_input("Enter OpenAI API Key:", type="password")
-        
+    
+    
+    
+    
+    # Require API Key first
+    
+    
+    
+    
+    
+    # Require API Key first
+    
+    
+    
+    
+    
     # User input for model configuration
     persona = st.sidebar.text_area("Persona Instructions", "You are an AI tutor specializing in cybersecurity.")
     model = st.sidebar.radio("Choose Model:", ["gpt-4", "gpt-3.5-turbo"], index=0)
@@ -525,6 +555,11 @@ def custom_gpt_page():
     
     # User input
     user_input = st.text_area("Ask me anything:", key="user_input", placeholder="Type your message here...
+
+Examples:
+- Explain cybersecurity threats in simple terms.
+- How do I secure my IoT devices?
+- What are common network vulnerabilities?")"Type your message here...
 
 Examples:
 - Explain cybersecurity threats in simple terms.
