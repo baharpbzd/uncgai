@@ -525,7 +525,7 @@ def custom_gpt_page():
         st.chat_message(msg["role"]).write(msg["content"])
     
     # User input
-    user_input = st.text_area("Ask me anything:", key="user_input", placeholder="Type your message here...
+    user_input = st.text_area("Ask me anything:", key="user_input", placeholder="Type your message here...)
 
 Examples:
 - Explain cybersecurity threats in simple terms.
